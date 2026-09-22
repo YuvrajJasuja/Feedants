@@ -16,10 +16,10 @@ export interface SubmissionResponse {
 
 export const submissionApi = {
   submitEntry: async (payload: SubmissionPayload): Promise<ApiResponse<SubmissionResponse>> => {
-    return apiClient.post<SubmissionResponse>(`/competitions/${payload.competitionId}/submit`, payload);
+    return apiClient.post<SubmissionResponse>(`/competitions/${payload.competitionId}/submissions`, payload);
   },
 
   getUserSubmission: async (competitionId: string, userId: string): Promise<ApiResponse<SubmissionResponse>> => {
-    return apiClient.get<SubmissionResponse>(`/competitions/${competitionId}/submission?userId=${userId}`);
+    return apiClient.get<SubmissionResponse>(`/competitions/${competitionId}/submissions?userId=${userId}`);
   },
 };
