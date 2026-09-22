@@ -5,38 +5,45 @@ const env = require('./env');
 let mongoMemoryServer = null;
 
 const connectDB = async () => {
-  const isProduction = env.nodeEnv === 'production';
+  const isProduction = env.nodeEnv === 'production' || Boolean(process.env.RENDER);
   const connectionUri = env.mongodbUri;
+  const isRemoteUri =
+    connectionUri &&
+    (connectionUri.startsWith('mongodb+srv://') ||
+      (!connectionUri.includes('127.0.0.1') && !connectionUri.includes('localhost')));
 
-  if (isProduction) {
+  // For Production, Render deployment, or any Remote Database URI (e.g. MongoDB Atlas):
+  if (isProduction || isRemoteUri) {
     if (!connectionUri) {
       console.error('[Database Error] MONGODB_URI environment variable is missing or empty.');
-      console.error('[Database Error] Production server startup aborted. MONGODB_URI is required in production.');
+      console.error('[Database Error] Server startup aborted. MONGODB_URI is required.');
       process.exit(1);
     }
 
     try {
-      console.log('[Database] Connecting directly to production MongoDB database...');
+      console.log(`[Database] Connecting directly to MongoDB database (${connectionUri.substring(0, 30)}...)...`);
       await mongoose.connect(connectionUri, {
-        serverSelectionTimeoutMS: 5000,
+        serverSelectionTimeoutMS: 10000, // 10 seconds timeout for cloud TLS handshake
       });
-      console.log('[Database] Connected successfully to production MongoDB database!');
+      console.log('[Database] Connected successfully to MongoDB database!');
       return mongoose.connection;
     } catch (err) {
-      console.error(`[Database Error] Could not connect to production MongoDB at ${connectionUri}. Error: ${err.message}`);
-      console.error('[Database Error] Production startup aborted. In-memory database fallback is disabled in production.');
+      console.error(`[Database Error] Could not connect to MongoDB database. Error: ${err.message}`);
+      console.error('[Database Error] Startup aborted. In-memory database fallback is strictly disabled for remote connections.');
       process.exit(1);
     }
   }
 
-  // Development / Testing Environment
+  // Development / Testing Local Fallback ONLY (when MONGODB_URI points to localhost)
   try {
     await mongoose.connect(connectionUri, {
-      serverSelectionTimeoutMS: 2000,
+      serverSelectionTimeoutMS: 3000,
     });
-    console.log(`[Database] Connected to MongoDB at ${connectionUri}`);
+    console.log(`[Database] Connected to local MongoDB at ${connectionUri}`);
   } catch (err) {
-    console.warn(`[Database] Could not connect to primary MONGODB_URI (${connectionUri}). Starting dev fallback in-memory MongoDB instance...`);
+    console.warn(
+      `[Database] Could not connect to local MONGODB_URI (${connectionUri}). Starting dev fallback in-memory MongoDB instance...`
+    );
     const { MongoMemoryServer } = require('mongodb-memory-server');
     const downloadDir = path.join(__dirname, '../../../.mongo-binaries');
 
