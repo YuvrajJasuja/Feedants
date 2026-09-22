@@ -63,13 +63,6 @@ const registerUserForCompetition = async (competitionId, userId) => {
     throw error;
   }
 
-  /**
-   * ATOMIC CONCURRENCY STRATEGY:
-   * Execute an atomic findOneAndUpdate operation in MongoDB.
-   * Condition: registeredParticipants MUST be strictly less than maxParticipants ($lt).
-   * This guarantees that even under concurrent burst requests, MongoDB atomically
-   * increments registeredParticipants without race conditions or overbooking.
-   */
   const updatedCompetition = await Competition.findOneAndUpdate(
     {
       _id: competitionId,
@@ -95,7 +88,6 @@ const registerUserForCompetition = async (competitionId, userId) => {
     throw error;
   }
 
-  // 4. Create Participation Record enforcing compound unique index ({ userId, competitionId })
   try {
     const participation = await Participation.create({
       userId: effectiveUserId,
@@ -112,9 +104,7 @@ const registerUserForCompetition = async (competitionId, userId) => {
       competitionState: updatedStateInfo,
     };
   } catch (dbErr) {
-    // Catch duplicate registration race condition via unique index -> HTTP 409
     if (dbErr.code === 11000) {
-      // Rollback the atomic increment
       await Competition.findByIdAndUpdate(competitionId, { $inc: { registeredParticipants: -1 } });
       const error = new Error('You are already registered for this competition.');
       error.statusCode = 409;
@@ -135,12 +125,14 @@ const getUserParticipationStatus = async (competitionId, userId) => {
     return {
       status: 'NOT_REGISTERED',
       isRegistered: false,
+      hasSubmitted: false,
     };
   }
 
   return {
     status: participation.status,
     isRegistered: true,
+    hasSubmitted: !!participation.submissionId || participation.status === 'SUBMITTED' || participation.status === 'UNDER_REVIEW',
     participation,
   };
 };

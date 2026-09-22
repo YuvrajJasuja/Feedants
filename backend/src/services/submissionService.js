@@ -1,10 +1,26 @@
 const Competition = require('../models/Competition');
 const Participation = require('../models/Participation');
 const Submission = require('../models/Submission');
-const { calculateCompetitionState } = require('../utils/competitionState');
 
+/**
+ * Production implementation should upload media to object storage such as S3/Cloudinary and persist the resulting URL.
+ */
 const createSubmission = async ({ competitionId, userId, title, description, mediaUrl, videoUrl }) => {
   const url = mediaUrl || videoUrl;
+
+  if (!url || !url.trim()) {
+    const error = new Error('Media file URL or selection is required.');
+    error.statusCode = 400;
+    error.code = 'INVALID_SUBMISSION';
+    throw error;
+  }
+
+  if (!title || !title.trim()) {
+    const error = new Error('Submission title is required.');
+    error.statusCode = 400;
+    error.code = 'INVALID_SUBMISSION';
+    throw error;
+  }
 
   const competition = await Competition.findById(competitionId);
   if (!competition) {
@@ -42,8 +58,8 @@ const createSubmission = async ({ competitionId, userId, title, description, med
 
   const existingSubmission = await Submission.findOne({ competitionId, userId });
   if (existingSubmission) {
-    const error = new Error('You have already submitted an entry for this competition.');
-    error.statusCode = 400;
+    const error = new Error('You have already submitted for this competition.');
+    error.statusCode = 409;
     error.code = 'ALREADY_SUBMITTED';
     throw error;
   }
@@ -51,14 +67,14 @@ const createSubmission = async ({ competitionId, userId, title, description, med
   const submission = await Submission.create({
     competitionId,
     userId,
-    title,
-    description: description || '',
-    mediaUrl: url,
-    status: 'UPLOADED',
+    title: title.trim(),
+    description: description ? description.trim() : '',
+    mediaUrl: url.trim(),
+    status: 'UNDER_REVIEW',
     submittedAt: new Date(),
   });
 
-  participation.status = 'SUBMITTED';
+  participation.status = 'UNDER_REVIEW';
   participation.submissionId = submission._id;
   await participation.save();
 
