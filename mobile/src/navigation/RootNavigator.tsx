@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import { AuthProvider, useAuth } from '../context/AuthContext';
 import HomeScreen from '../screens/HomeScreen';
 import ExploreScreen from '../screens/ExploreScreen';
 import CompetitionDetailsScreen from '../screens/CompetitionDetailsScreen';
@@ -16,7 +17,6 @@ import AuthScreen from '../screens/AuthScreen';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-// Dummy component for the middle "Create" tab item
 const DummyCreateScreen = () => <View style={{ flex: 1, backgroundColor: '#080B0D' }} />;
 
 function TabNavigator() {
@@ -104,7 +104,18 @@ function TabNavigator() {
   );
 }
 
-export function RootNavigator() {
+function NavigationStack() {
+  const { isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#D4A446" />
+        <Text style={styles.loadingText}>Restoring session...</Text>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -118,7 +129,26 @@ export function RootNavigator() {
   );
 }
 
+export function RootNavigator() {
+  return (
+    <AuthProvider>
+      <NavigationStack />
+    </AuthProvider>
+  );
+}
+
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: '#080B0D',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  loadingText: {
+    color: '#9E988D',
+    fontSize: 13,
+    marginTop: 12,
+  },
   createTabBadge: {
     width: 34,
     height: 34,

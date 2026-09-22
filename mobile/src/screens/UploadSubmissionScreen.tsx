@@ -11,18 +11,18 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
+import { useAuth } from '../context/AuthContext';
 import { competitionApi, CompetitionDetails } from '../services/competitionApi';
 import { submissionApi } from '../services/submissionApi';
 import PrimaryButton from '../components/PrimaryButton';
 import SecondaryButton from '../components/SecondaryButton';
 import LoadingState from '../components/LoadingState';
 
-const DEMO_USER_ID = '6ab250f749f7e9e5f758fd1e';
-
 export const UploadSubmissionScreen: React.FC<{ navigation: any; route: any }> = ({
   navigation,
   route,
 }) => {
+  const { user, isAuthenticated } = useAuth();
   const initialCompId = route?.params?.competitionId || route?.params?.id;
 
   const [step, setStep] = useState<number>(1);
@@ -92,12 +92,21 @@ export const UploadSubmissionScreen: React.FC<{ navigation: any; route: any }> =
 
   const handleSubmit = async () => {
     if (!selectedCompId) return;
+
+    if (!isAuthenticated) {
+      Alert.alert('Sign In Required', 'Please sign in or create an account to upload a competition entry.', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Sign In', onPress: () => navigation.navigate('Auth') },
+      ]);
+      return;
+    }
+
     setSubmitting(true);
     setError(null);
 
     const res = await submissionApi.submitEntry({
       competitionId: selectedCompId,
-      userId: DEMO_USER_ID,
+      userId: user?.id,
       title: title.trim(),
       description: description.trim(),
       videoUrl: videoUrl.trim(),

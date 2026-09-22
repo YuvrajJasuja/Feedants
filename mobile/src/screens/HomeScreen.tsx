@@ -10,6 +10,7 @@ import {
   StatusBar,
   RefreshControl,
 } from 'react-native';
+import { useAuth } from '../context/AuthContext';
 import { competitionApi, CompetitionDetails } from '../services/competitionApi';
 import SectionHeader from '../components/SectionHeader';
 import CategoryChip from '../components/CategoryChip';
@@ -22,6 +23,7 @@ import EmptyState from '../components/EmptyState';
 const CATEGORIES = ['All', 'Dance', 'Singing', 'Art', 'Photography', 'Fashion'];
 
 export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const { user } = useAuth();
   const [competitions, setCompetitions] = useState<CompetitionDetails[]>([]);
   const [filteredComps, setFilteredComps] = useState<CompetitionDetails[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -29,6 +31,17 @@ export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState<string>('');
+
+  const getInitials = (name?: string) => {
+    if (!name) return 'YJ';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
+  };
+
+  const displayName = user ? user.name.split(' ')[0] : 'Yuvraj';
 
   const loadData = async () => {
     setLoading(true);
@@ -86,7 +99,7 @@ export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         {/* HEADER USER GREETING */}
         <View style={styles.headerRow}>
           <View>
-            <Text style={styles.greetingTitle}>Hi, Yuvraj 👋</Text>
+            <Text style={styles.greetingTitle}>Hi, {displayName} 👋</Text>
             <Text style={styles.greetingSub}>Let's explore your next opportunity.</Text>
           </View>
           <View style={styles.headerRightActions}>
@@ -105,7 +118,7 @@ export const HomeScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
               activeOpacity={0.8}
               accessibilityLabel="Profile menu"
             >
-              <Text style={styles.profileBadgeText}>YJ</Text>
+              <Text style={styles.profileBadgeText}>{getInitials(user?.name)}</Text>
             </TouchableOpacity>
           </View>
         </View>

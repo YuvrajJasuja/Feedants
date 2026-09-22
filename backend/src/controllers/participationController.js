@@ -3,7 +3,18 @@ const participationService = require('../services/participationService');
 const registerForCompetition = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { userId } = req.body;
+    // Derive user identity strictly from req.user (authenticated token) or fallback to req.body.userId
+    const userId = req.user ? (req.user.id || req.user._id) : req.body.userId;
+
+    if (!userId) {
+      return res.status(401).json({
+        success: false,
+        error: {
+          code: 'UNAUTHORIZED',
+          message: 'Authentication required to register for competition.',
+        },
+      });
+    }
 
     const result = await participationService.registerUserForCompetition(id, userId);
 
@@ -20,14 +31,17 @@ const registerForCompetition = async (req, res, next) => {
 const getParticipationStatus = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const userId = req.query.userId || req.headers['x-user-id'];
+    const userId = req.user ? (req.user.id || req.user._id) : (req.query.userId || req.headers['x-user-id']);
 
     if (!userId) {
-      return res.status(400).json({
-        success: false,
-        error: {
-          code: 'MISSING_USER_ID',
-          message: 'userId query parameter or header is required.',
+      // Unauthenticated visitor
+      return res.json({
+        success: true,
+        data: {
+          isRegistered: false,
+          status: 'NOT_REGISTERED',
+          registeredAt: null,
+          hasSubmitted: false,
         },
       });
     }

@@ -20,14 +20,15 @@ const getReviews = async (req, res, next) => {
 const createReview = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { userId, rating, comment } = req.body;
+    const userId = req.user ? (req.user.id || req.user._id) : req.body.userId;
+    const { rating, comment } = req.body;
 
     if (!userId || !rating || !comment) {
       return res.status(400).json({
         success: false,
         error: {
           code: 'INVALID_INPUT',
-          message: 'userId, rating, and comment are required.',
+          message: 'Rating and comment are required.',
         },
       });
     }

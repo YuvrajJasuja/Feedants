@@ -10,21 +10,43 @@ import {
   StatusBar,
   Alert,
 } from 'react-native';
+import { useAuth } from '../context/AuthContext';
 import PrimaryButton from '../components/PrimaryButton';
 import SecondaryButton from '../components/SecondaryButton';
 
 export const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const { login, register } = useAuth();
+
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const [email, setEmail] = useState<string>('yuvraj@feedants.com');
-  const [password, setPassword] = useState<string>('••••••••');
+  const [password, setPassword] = useState<string>('password123');
   const [fullName, setFullName] = useState<string>('Yuvraj Jasuja');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const handleSubmit = () => {
-    Alert.alert(
-      isLogin ? 'Welcome Back!' : 'Account Created!',
-      `Logged in as ${email}. Navigating to Feedants Home.`,
-      [{ text: 'Continue', onPress: () => navigation.navigate('MainTabs', { screen: 'Home' }) }]
-    );
+  const handleSubmit = async () => {
+    setErrorMsg(null);
+    setLoading(true);
+
+    if (isLogin) {
+      const res = await login({ email, password });
+      setLoading(false);
+      if (res.success) {
+        navigation.navigate('MainTabs', { screen: 'Home' });
+      } else {
+        setErrorMsg(res.error || 'Login failed. Please check credentials.');
+      }
+    } else {
+      const res = await register({ name: fullName, email, password });
+      setLoading(false);
+      if (res.success) {
+        Alert.alert('Account Created!', 'Welcome to Feedants!', [
+          { text: 'Continue', onPress: () => navigation.navigate('MainTabs', { screen: 'Home' }) },
+        ]);
+      } else {
+        setErrorMsg(res.error || 'Registration failed.');
+      }
+    }
   };
 
   const handleSocialPlaceholder = (provider: string) => {
@@ -52,17 +74,30 @@ export const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
         <View style={styles.toggleBar}>
           <TouchableOpacity
             style={[styles.toggleBtn, isLogin && styles.toggleBtnActive]}
-            onPress={() => setIsLogin(true)}
+            onPress={() => {
+              setIsLogin(true);
+              setErrorMsg(null);
+            }}
           >
             <Text style={[styles.toggleText, isLogin && styles.toggleTextActive]}>Sign In</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.toggleBtn, !isLogin && styles.toggleBtnActive]}
-            onPress={() => setIsLogin(false)}
+            onPress={() => {
+              setIsLogin(false);
+              setErrorMsg(null);
+            }}
           >
             <Text style={[styles.toggleText, !isLogin && styles.toggleTextActive]}>Create Account</Text>
           </TouchableOpacity>
         </View>
+
+        {/* ERROR BANNER */}
+        {errorMsg && (
+          <View style={styles.errorBanner}>
+            <Text style={styles.errorBannerText}>⚠️ {errorMsg}</Text>
+          </View>
+        )}
 
         {/* FORM INPUTS */}
         <View style={styles.formContainer}>
@@ -109,6 +144,7 @@ export const AuthScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
           <PrimaryButton
             title={isLogin ? 'Sign In' : 'Create Account'}
             onPress={handleSubmit}
+            loading={loading}
             style={{ marginTop: 16 }}
           />
         </View>
@@ -159,7 +195,7 @@ const styles = StyleSheet.create({
   },
   brandContainer: {
     alignItems: 'center',
-    marginBottom: 28,
+    marginBottom: 24,
   },
   logoBadge: {
     width: 60,
@@ -191,7 +227,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#12161A',
     borderRadius: 12,
     padding: 3,
-    marginBottom: 20,
+    marginBottom: 16,
     borderColor: 'rgba(217, 164, 65, 0.2)',
     borderWidth: 1,
   },
@@ -213,8 +249,20 @@ const styles = StyleSheet.create({
     color: '#080B0D',
     fontWeight: '700',
   },
+  errorBanner: {
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    borderColor: '#EF4444',
+    borderWidth: 1,
+    padding: 12,
+    borderRadius: 10,
+    marginBottom: 14,
+  },
+  errorBannerText: {
+    color: '#EF4444',
+    fontSize: 12,
+  },
   formContainer: {
-    marginBottom: 20,
+    marginBottom: 16,
   },
   label: {
     color: '#D1D5DB',

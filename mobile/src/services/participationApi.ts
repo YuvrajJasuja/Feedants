@@ -1,21 +1,22 @@
 import { apiClient, ApiResponse } from './api';
 
 export interface ParticipationState {
-  competitionId: string;
-  userId: string;
+  competitionId?: string;
+  userId?: string;
   isRegistered: boolean;
-  paymentStatus: 'pending' | 'completed' | 'failed' | 'none';
+  paymentStatus?: 'pending' | 'completed' | 'failed' | 'none';
   hasSubmitted?: boolean;
   status?: string;
   participation?: any;
 }
 
 export const participationApi = {
-  getUserStatus: async (competitionId: string, userId: string): Promise<ApiResponse<ParticipationState>> => {
-    return apiClient.get<ParticipationState>(`/competitions/${competitionId}/participation?userId=${userId}`);
+  getUserStatus: async (competitionId: string, userId?: string): Promise<ApiResponse<ParticipationState>> => {
+    const query = userId ? `?userId=${userId}` : '';
+    return apiClient.get<ParticipationState>(`/competitions/${competitionId}/participation${query}`);
   },
 
-  registerForCompetition: async (competitionId: string, userId: string): Promise<ApiResponse<ParticipationState>> => {
-    return apiClient.post<ParticipationState>(`/competitions/${competitionId}/register`, { userId });
+  registerForCompetition: async (competitionId: string, userId?: string): Promise<ApiResponse<ParticipationState>> => {
+    return apiClient.post<ParticipationState>(`/competitions/${competitionId}/register`, userId ? { userId } : {});
   },
 };

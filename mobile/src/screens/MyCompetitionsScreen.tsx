@@ -9,50 +9,39 @@ import {
   StatusBar,
   RefreshControl,
 } from 'react-native';
-import { competitionApi, CompetitionDetails } from '../services/competitionApi';
-import { participationApi, ParticipationState } from '../services/participationApi';
+import { useAuth } from '../context/AuthContext';
+import { userApi, UserCompetitionItem } from '../services/userApi';
 import CompetitionCard from '../components/CompetitionCard';
 import EmptyState from '../components/EmptyState';
 import LoadingState from '../components/LoadingState';
 import ErrorState from '../components/ErrorState';
 
-const DEMO_USER_ID = '6ab250f749f7e9e5f758fd1e';
-
 type TabType = 'Upcoming' | 'Ongoing' | 'Completed';
 
-interface MyCompetitionItem {
-  competition: CompetitionDetails;
-  participation: ParticipationState | null;
-}
-
 export const MyCompetitionsScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const { isAuthenticated } = useAuth();
   const [activeTab, setActiveTab] = useState<TabType>('Ongoing');
   const [loading, setLoading] = useState<boolean>(true);
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [items, setItems] = useState<MyCompetitionItem[]>([]);
+  const [items, setItems] = useState<UserCompetitionItem[]>([]);
 
   const loadData = async () => {
+    if (!isAuthenticated) {
+      setItems([]);
+      setLoading(false);
+      setRefreshing(false);
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
-      const compRes = await competitionApi.getAllCompetitions();
-      if (compRes.success && compRes.data) {
-        // Fetch participation status for each competition for DEMO_USER_ID
-        const itemList: MyCompetitionItem[] = [];
-        for (const comp of compRes.data) {
-          const compId = comp.id || comp._id;
-          const partRes = await participationApi.getUserStatus(compId, DEMO_USER_ID);
-          if (partRes.success && partRes.data && partRes.data.isRegistered) {
-            itemList.push({
-              competition: comp,
-              participation: partRes.data,
-            });
-          }
-        }
-        setItems(itemList);
+      const res = await userApi.getMyCompetitions();
+      if (res.success && res.data) {
+        setItems(res.data);
       } else {
-        setError(typeof compRes.error === 'string' ? compRes.error : 'Failed to fetch competitions.');
+        setError(typeof res.error === 'string' ? res.error : 'Failed to fetch user competitions.');
       }
     } catch (err: any) {
       setError(err?.message || 'Error loading my competitions.');
@@ -64,7 +53,7 @@ export const MyCompetitionsScreen: React.FC<{ navigation: any }> = ({ navigation
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [isAuthenticated]);
 
   const onRefresh = () => {
     setRefreshing(true);

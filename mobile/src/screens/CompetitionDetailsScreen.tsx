@@ -17,13 +17,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { competitionApi, CompetitionDetails } from '../services/competitionApi';
 import { participationApi, ParticipationState } from '../services/participationApi';
 import { reviewApi, ReviewItem } from '../services/reviewApi';
+import { useAuth } from '../context/AuthContext';
 import { useCountdown } from '../hooks/useCountdown';
 import { getCompetitionCTA, CTAConfig } from '../utils/ctaHelper';
 
 const { width } = Dimensions.get('window');
-
-// Default fallback demo user ID for testing when auth is not active
-const DEMO_USER_ID = '6ab250f749f7e9e5f758fd1e';
 
 interface Props {
   navigation?: any;
@@ -31,6 +29,7 @@ interface Props {
 }
 
 export const CompetitionDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { user, isAuthenticated } = useAuth();
   const targetId = route?.params?.id || route?.params?.competitionId;
 
   const [loading, setLoading] = useState<boolean>(true);
@@ -89,7 +88,7 @@ export const CompetitionDetailsScreen: React.FC<Props> = ({ navigation, route })
       }
 
       // 2. Fetch Competition Details
-      const compRes = await competitionApi.getCompetitionDetails(compId, DEMO_USER_ID);
+      const compRes = await competitionApi.getCompetitionDetails(compId, user?.id);
       if (!compRes.success || !compRes.data) {
         const errMsg = typeof compRes.error === 'string' 
           ? compRes.error 
@@ -101,10 +100,14 @@ export const CompetitionDetailsScreen: React.FC<Props> = ({ navigation, route })
 
       setCompetition(compRes.data);
 
-      // 3. Fetch Participation Status
-      const partRes = await participationApi.getUserStatus(compId, DEMO_USER_ID);
-      if (partRes.success && partRes.data) {
-        setParticipation(partRes.data);
+      // 3. Fetch Participation Status for current user
+      if (user?.id) {
+        const partRes = await participationApi.getUserStatus(compId, user.id);
+        if (partRes.success && partRes.data) {
+          setParticipation(partRes.data);
+        }
+      } else {
+        setParticipation(null);
       }
 
       // 4. Fetch Reviews
@@ -118,7 +121,7 @@ export const CompetitionDetailsScreen: React.FC<Props> = ({ navigation, route })
       setLoading(false);
       setRefreshing(false);
     }
-  }, [targetId]);
+  }, [targetId, user?.id]);
 
   useEffect(() => {
     fetchScreenData(true);
@@ -130,16 +133,24 @@ export const CompetitionDetailsScreen: React.FC<Props> = ({ navigation, route })
     fetchScreenData(false);
   };
 
-  // Registration Handler with Double-Tap Lock
+  // Registration Handler with Authentication Check & Double-Tap Lock
   const handleRegisterPress = async () => {
     if (!competition || registerLoading) return;
+
+    if (!isAuthenticated) {
+      Alert.alert('Sign In Required', 'Please sign in or create an account to register for this competition.', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Sign In', onPress: () => navigation?.navigate?.('Auth') },
+      ]);
+      return;
+    }
 
     setRegisterLoading(true);
     setRegisterError(null);
     setRegisterSuccess(null);
 
     const compId = competition.id || competition._id;
-    const res = await participationApi.registerForCompetition(compId, DEMO_USER_ID);
+    const res = await participationApi.registerForCompetition(compId);
 
     setRegisterLoading(false);
 

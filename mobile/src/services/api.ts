@@ -15,14 +15,34 @@ export interface ApiResponse<T = any> {
 class ApiClient {
   private baseUrl: string;
   private timeoutMs: number;
+  private authToken: string | null = null;
 
   constructor() {
     this.baseUrl = config.apiUrl;
     this.timeoutMs = config.timeout || 10000;
   }
 
+  public setAuthToken(token: string | null) {
+    this.authToken = token;
+  }
+
+  public getAuthToken(): string | null {
+    return this.authToken;
+  }
+
   public getBaseUrl(): string {
     return this.baseUrl;
+  }
+
+  private getHeaders(customHeaders: Record<string, string> = {}): Record<string, string> {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...customHeaders,
+    };
+    if (this.authToken && !headers['Authorization']) {
+      headers['Authorization'] = `Bearer ${this.authToken}`;
+    }
+    return headers;
   }
 
   public async get<T>(endpoint: string, headers: Record<string, string> = {}): Promise<ApiResponse<T>> {
@@ -32,10 +52,7 @@ class ApiClient {
     try {
       const response = await fetch(`${this.baseUrl}${endpoint}`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          ...headers,
-        },
+        headers: this.getHeaders(headers),
         signal: controller.signal,
       });
       clearTimeout(id);
@@ -63,18 +80,15 @@ class ApiClient {
     }
   }
 
-  public async post<T>(endpoint: string, body: any, headers: Record<string, string> = {}): Promise<ApiResponse<T>> {
+  public async post<T>(endpoint: string, body?: any, headers: Record<string, string> = {}): Promise<ApiResponse<T>> {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), this.timeoutMs);
 
     try {
       const response = await fetch(`${this.baseUrl}${endpoint}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...headers,
-        },
-        body: JSON.stringify(body),
+        headers: this.getHeaders(headers),
+        body: body !== undefined ? JSON.stringify(body) : undefined,
         signal: controller.signal,
       });
       clearTimeout(id);

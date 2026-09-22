@@ -11,9 +11,13 @@ import {
   StatusBar,
   Alert,
 } from 'react-native';
+import { useAuth } from '../context/AuthContext';
 import PrimaryButton from '../components/PrimaryButton';
+import SecondaryButton from '../components/SecondaryButton';
 
 export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => {
+  const { user, isAuthenticated, logout } = useAuth();
+
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [activeModalTitle, setActiveModalTitle] = useState<string>('');
   const [activeModalDesc, setActiveModalDesc] = useState<string>('');
@@ -24,11 +28,27 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
     setModalVisible(true);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     Alert.alert('Sign Out', 'Are you sure you want to sign out?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Sign Out', style: 'destructive', onPress: () => navigation.navigate('Auth') },
+      {
+        text: 'Sign Out',
+        style: 'destructive',
+        onPress: async () => {
+          await logout();
+          navigation.navigate('Auth');
+        },
+      },
     ]);
+  };
+
+  const getInitials = (name?: string) => {
+    if (!name) return 'FJ';
+    const parts = name.trim().split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return name.slice(0, 2).toUpperCase();
   };
 
   const MENU_ITEMS = [
@@ -81,13 +101,6 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
       subtitle: 'FAQs, guidelines & support team',
       onPress: () => openPlaceholder('Help & Support', 'Get assistance with registration, video uploads, or contest rules.'),
     },
-    {
-      id: 'auth_account',
-      icon: '🔐',
-      title: 'Account & Security',
-      subtitle: 'Sign in, credentials & active session',
-      onPress: () => navigation.navigate('Auth'),
-    },
   ];
 
   return (
@@ -96,32 +109,48 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* PROFILE HEADER CARD */}
-        <View style={styles.profileHeaderCard}>
-          <View style={styles.avatarWrapper}>
-            <Text style={styles.avatarInitials}>YJ</Text>
-            <View style={styles.verifiedBadge}>
-              <Text style={{ fontSize: 9 }}>✓</Text>
+        {isAuthenticated && user ? (
+          <View style={styles.profileHeaderCard}>
+            <View style={styles.avatarWrapper}>
+              {user.profileImage ? (
+                <Image source={{ uri: user.profileImage }} style={styles.avatarImage} />
+              ) : (
+                <Text style={styles.avatarInitials}>{getInitials(user.name)}</Text>
+              )}
+              <View style={styles.verifiedBadge}>
+                <Text style={{ fontSize: 9, color: '#FFFFFF' }}>✓</Text>
+              </View>
             </View>
+            <Text style={styles.userName}>{user.name}</Text>
+            <Text style={styles.userEmail}>{user.email}</Text>
+            <Text style={styles.userRole}>Feedants Performer & Artist</Text>
           </View>
-          <Text style={styles.userName}>Yuvraj Jasuja</Text>
-          <Text style={styles.userEmail}>yuvraj@feedants.com</Text>
-          <Text style={styles.userRole}>Classical Dance & Arts Performer</Text>
-        </View>
+        ) : (
+          <View style={styles.unauthCard}>
+            <Text style={styles.unauthTitle}>Guest Artist</Text>
+            <Text style={styles.unauthSub}>Sign in to track your competition registrations & submissions.</Text>
+            <PrimaryButton
+              title="Sign In / Register"
+              onPress={() => navigation.navigate('Auth')}
+              style={{ marginTop: 12, width: '100%' }}
+            />
+          </View>
+        )}
 
         {/* STATS ROW */}
         <View style={styles.statsContainer}>
           <View style={styles.statBox}>
-            <Text style={styles.statValue}>3</Text>
+            <Text style={styles.statValue}>{isAuthenticated ? '3' : '0'}</Text>
             <Text style={styles.statLabel}>Participations</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statBox}>
-            <Text style={[styles.statValue, { color: '#F59E0B' }]}>1</Text>
+            <Text style={[styles.statValue, { color: '#F59E0B' }]}>{isAuthenticated ? '1' : '0'}</Text>
             <Text style={styles.statLabel}>Wins</Text>
           </View>
           <View style={styles.statDivider} />
           <View style={styles.statBox}>
-            <Text style={[styles.statValue, { color: '#E6C36E' }]}>450</Text>
+            <Text style={[styles.statValue, { color: '#E6C36E' }]}>{isAuthenticated ? '450' : '0'}</Text>
             <Text style={styles.statLabel}>Points</Text>
           </View>
         </View>
@@ -147,11 +176,20 @@ export const ProfileScreen: React.FC<{ navigation: any }> = ({ navigation }) => 
             </TouchableOpacity>
           ))}
 
-          {/* LOGOUT BUTTON */}
-          <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout} activeOpacity={0.8}>
-            <Text style={styles.logoutIcon}>🚪</Text>
-            <Text style={styles.logoutText}>Sign Out</Text>
-          </TouchableOpacity>
+          {/* LOGOUT / LOGIN BUTTON */}
+          {isAuthenticated ? (
+            <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout} activeOpacity={0.8}>
+              <Text style={styles.logoutIcon}>🚪</Text>
+              <Text style={styles.logoutText}>Sign Out</Text>
+            </TouchableOpacity>
+          ) : (
+            <SecondaryButton
+              title="Sign In to Account"
+              icon="🔐"
+              onPress={() => navigation.navigate('Auth')}
+              style={{ marginTop: 12 }}
+            />
+          )}
         </View>
 
         <View style={{ height: 80 }} />
@@ -200,6 +238,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
+  unauthCard: {
+    backgroundColor: '#12161A',
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderWidth: 1,
+    borderRadius: 20,
+    padding: 20,
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  unauthTitle: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  unauthSub: {
+    color: '#9E988D',
+    fontSize: 12,
+    textAlign: 'center',
+  },
   avatarWrapper: {
     width: 72,
     height: 72,
@@ -211,6 +269,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 10,
     position: 'relative',
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 36,
   },
   avatarInitials: {
     color: '#F5DE98',

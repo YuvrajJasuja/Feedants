@@ -9,6 +9,9 @@ mobile/.expo/
 mobile/dist/
 mobile/web-build/
 
+# MongoDB local binaries
+.mongo-binaries/
+
 # Environment files
 .env
 .env.local

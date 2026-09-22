@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const path = require('path');
 const env = require('./env');
 
 let mongoMemoryServer = null;
@@ -15,7 +16,13 @@ const connectDB = async () => {
     } catch (err) {
       console.warn(`[Database] Could not connect to primary MONGODB_URI (${connectionUri}). Starting fallback in-memory MongoDB instance...`);
       const { MongoMemoryServer } = require('mongodb-memory-server');
-      mongoMemoryServer = await MongoMemoryServer.create();
+      const downloadDir = path.join(__dirname, '../../../.mongo-binaries');
+
+      mongoMemoryServer = await MongoMemoryServer.create({
+        download: {
+          downloadDir,
+        },
+      });
       connectionUri = mongoMemoryServer.getUri();
       await mongoose.connect(connectionUri);
       console.log(`[Database] Connected to fallback in-memory MongoDB at ${connectionUri}`);

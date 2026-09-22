@@ -2,7 +2,7 @@ import { apiClient, ApiResponse } from './api';
 
 export interface SubmissionPayload {
   competitionId: string;
-  userId: string;
+  userId?: string;
   title: string;
   description?: string;
   videoUrl: string;
@@ -19,7 +19,8 @@ export const submissionApi = {
     return apiClient.post<SubmissionResponse>(`/competitions/${payload.competitionId}/submissions`, payload);
   },
 
-  getUserSubmission: async (competitionId: string, userId: string): Promise<ApiResponse<SubmissionResponse>> => {
-    return apiClient.get<SubmissionResponse>(`/competitions/${competitionId}/submissions?userId=${userId}`);
+  getUserSubmission: async (competitionId: string, userId?: string): Promise<ApiResponse<SubmissionResponse>> => {
+    const query = userId ? `?userId=${userId}` : '';
+    return apiClient.get<SubmissionResponse>(`/competitions/${competitionId}/submissions${query}`);
   },
 };
