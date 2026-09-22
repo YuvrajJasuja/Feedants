@@ -14,15 +14,16 @@ import {
   Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { theme } from '../theme/theme';
 import { competitionApi, CompetitionDetails } from '../services/competitionApi';
 import { participationApi, ParticipationState } from '../services/participationApi';
 import { reviewApi, ReviewItem } from '../services/reviewApi';
+import { useCountdown } from '../hooks/useCountdown';
+import { getCompetitionCTA, CTAConfig } from '../utils/ctaHelper';
 
 const { width } = Dimensions.get('window');
 
 // Default fallback demo user ID for testing when auth is not active
-const DEMO_USER_ID = '6ab234d4763ba1d7c9dab7d4';
+const DEMO_USER_ID = '6ab250f749f7e9e5f758fd1e';
 
 interface Props {
   navigation?: any;
@@ -40,14 +41,31 @@ export const CompetitionDetailsScreen: React.FC<Props> = ({ navigation, route })
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [activeTab, setActiveTab] = useState<'about' | 'judging' | 'rules'>('about');
   
-  // Registration Action State
+  // Registration Action State (Button lock & feedback)
   const [registerLoading, setRegisterLoading] = useState<boolean>(false);
   const [registerError, setRegisterError] = useState<string | null>(null);
   const [registerSuccess, setRegisterSuccess] = useState<string | null>(null);
 
-  // Dynamic Countdown String
-  const [countdownText, setCountdownText] = useState<string>('00d : 00h : 00m : 00s');
-  const [countdownLabel, setCountdownLabel] = useState<string>('Registration closes in');
+  // Target date resolution for countdown hook
+  let targetCountdownDate: string | undefined = undefined;
+  let countdownLabelPrefix = 'Registration closes in';
+
+  if (competition) {
+    if (competition.currentState === 'REGISTRATION_OPEN') {
+      targetCountdownDate = competition.registrationEnd;
+      countdownLabelPrefix = 'Registration closes in';
+    } else if (competition.currentState === 'SUBMISSION_OPEN') {
+      targetCountdownDate = competition.submissionEnd;
+      countdownLabelPrefix = 'Submission ends in';
+    } else if (competition.currentState === 'JUDGING') {
+      targetCountdownDate = competition.resultDate;
+      countdownLabelPrefix = 'Results announced in';
+    } else {
+      targetCountdownDate = competition.registrationEnd;
+    }
+  }
+
+  const { countdownText, countdownLabel } = useCountdown(targetCountdownDate, countdownLabelPrefix);
 
   const fetchScreenData = useCallback(async (showLoader = true) => {
     if (showLoader) setLoading(true);
@@ -95,7 +113,7 @@ export const CompetitionDetailsScreen: React.FC<Props> = ({ navigation, route })
         setReviews(revRes.data);
       }
     } catch (err: any) {
-      setError(err?.message || 'Unable to connect to server. Please check your connection.');
+      setError(err?.message || 'Unable to connect to server. Please check your connection and retry.');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -112,58 +130,8 @@ export const CompetitionDetailsScreen: React.FC<Props> = ({ navigation, route })
     fetchScreenData(false);
   };
 
-  // Real-time Countdown Timer Logic
-  useEffect(() => {
-    if (!competition) return;
-
-    const updateTimer = () => {
-      const now = new Date().getTime();
-      let targetDate: number | null = null;
-      let label = 'Registration closes in';
-
-      if (competition.currentState === 'REGISTRATION_OPEN') {
-        targetDate = new Date(competition.registrationEnd).getTime();
-        label = 'Registration closes in';
-      } else if (competition.currentState === 'SUBMISSION_OPEN') {
-        targetDate = new Date(competition.submissionEnd).getTime();
-        label = 'Submission ends in';
-      } else if (competition.currentState === 'JUDGING') {
-        targetDate = new Date(competition.resultDate).getTime();
-        label = 'Results announced in';
-      } else {
-        targetDate = new Date(competition.registrationEnd).getTime();
-      }
-
-      if (!targetDate || isNaN(targetDate)) {
-        setCountdownText('Ended');
-        return;
-      }
-
-      const diff = targetDate - now;
-
-      if (diff <= 0) {
-        setCountdownText('00d : 00h : 00m : 00s');
-        return;
-      }
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-      const pad = (n: number) => (n < 10 ? `0${n}` : `${n}`);
-      setCountdownLabel(label);
-      setCountdownText(`${pad(days)}d : ${pad(hours)}h : ${pad(minutes)}m : ${pad(seconds)}s`);
-    };
-
-    updateTimer();
-    const intervalId = setInterval(updateTimer, 1000);
-
-    return () => clearInterval(intervalId);
-  }, [competition]);
-
-  // Registration Handler
-  const handleRegister = async () => {
+  // Registration Handler with Double-Tap Lock
+  const handleRegisterPress = async () => {
     if (!competition || registerLoading) return;
 
     setRegisterLoading(true);
@@ -171,7 +139,6 @@ export const CompetitionDetailsScreen: React.FC<Props> = ({ navigation, route })
     setRegisterSuccess(null);
 
     const compId = competition.id || competition._id;
-
     const res = await participationApi.registerForCompetition(compId, DEMO_USER_ID);
 
     setRegisterLoading(false);
@@ -179,7 +146,7 @@ export const CompetitionDetailsScreen: React.FC<Props> = ({ navigation, route })
     if (res.success) {
       setRegisterSuccess('Successfully registered!');
       Alert.alert('Registration Successful', `You are registered for ${competition.title}!`);
-      fetchScreenData(false); // Refresh UI data immediately
+      fetchScreenData(false); // Authoritative server re-fetch
     } else {
       const errorMsg = typeof res.error === 'string'
         ? res.error
@@ -210,97 +177,18 @@ export const CompetitionDetailsScreen: React.FC<Props> = ({ navigation, route })
     }
   };
 
-  // Determine Primary CTA Button State
-  const renderPrimaryCTA = () => {
-    if (!competition) return null;
+  // Render Primary CTA using reusable helper
+  const ctaConfig: CTAConfig = getCompetitionCTA(competition, participation, registerLoading);
 
-    const isUserRegistered = participation?.isRegistered || competition.userParticipationState === 'REGISTERED';
-    const isSubmitted = competition.userParticipationState === 'SUBMITTED' || participation?.status === 'SUBMITTED';
-
-    if (registerLoading) {
-      return (
-        <View style={styles.ctaButton}>
-          <LinearGradient colors={['#F0D58C', '#E4BC66', '#B9892F']} style={styles.gradientCta}>
-            <ActivityIndicator size="small" color="#080B0D" />
-            <Text style={styles.ctaTitle}>PROCESSING...</Text>
-          </LinearGradient>
-        </View>
-      );
+  const handleCTAPress = () => {
+    if (ctaConfig.disabled) return;
+    if (ctaConfig.actionType === 'REGISTER') {
+      handleRegisterPress();
+    } else if (ctaConfig.actionType === 'UPLOAD_SUBMISSION') {
+      navigation?.navigate?.('UploadSubmission', { competitionId: competition?.id || competition?._id });
+    } else if (ctaConfig.actionType === 'VIEW_RESULTS') {
+      Alert.alert('Results Announcement', 'The official winners have been published! Check the leaderboard section.');
     }
-
-    if (isSubmitted) {
-      return (
-        <View style={[styles.ctaButton, { opacity: 0.9 }]}>
-          <LinearGradient colors={['#10B981', '#059669']} style={styles.gradientCta}>
-            <Text style={styles.ctaIcon}>✅</Text>
-            <View>
-              <Text style={[styles.ctaTitle, { color: '#FFF' }]}>SUBMISSION UNDER REVIEW</Text>
-              <Text style={[styles.ctaSub, { color: '#E5E7EB' }]}>Your video has been received.</Text>
-            </View>
-          </LinearGradient>
-        </View>
-      );
-    }
-
-    if (isUserRegistered) {
-      if (competition.isSubmissionActive) {
-        return (
-          <TouchableOpacity
-            style={styles.ctaButton}
-            activeOpacity={0.85}
-            onPress={() => navigation?.navigate?.('UploadSubmission', { competitionId: competition.id || competition._id })}
-          >
-            <LinearGradient colors={['#F0D58C', '#E4BC66', '#B9892F']} style={styles.gradientCta}>
-              <Text style={styles.ctaIcon}>📤</Text>
-              <View>
-                <Text style={styles.ctaTitle}>UPLOAD SUBMISSION</Text>
-                <Text style={styles.ctaSub}>Express. Perform. Inspire.</Text>
-              </View>
-            </LinearGradient>
-          </TouchableOpacity>
-        );
-      } else {
-        return (
-          <View style={styles.ctaButton}>
-            <LinearGradient colors={['#374151', '#1F2937']} style={styles.gradientCta}>
-              <Text style={styles.ctaIcon}>✓</Text>
-              <View>
-                <Text style={[styles.ctaTitle, { color: '#F5DE98' }]}>REGISTERED</Text>
-                <Text style={[styles.ctaSub, { color: '#9CA3AF' }]}>Waiting for submission window to open</Text>
-              </View>
-            </LinearGradient>
-          </View>
-        );
-      }
-    }
-
-    // Capacity Full or Registration Closed
-    if (competition.remainingSpots <= 0 || competition.currentState === 'REGISTRATION_CLOSED') {
-      return (
-        <View style={styles.ctaButton}>
-          <LinearGradient colors={['#374151', '#1F2937']} style={styles.gradientCta}>
-            <Text style={styles.ctaIcon}>🚫</Text>
-            <View>
-              <Text style={[styles.ctaTitle, { color: '#EF4444' }]}>REGISTRATION FULL</Text>
-              <Text style={[styles.ctaSub, { color: '#9CA3AF' }]}>Maximum capacity reached</Text>
-            </View>
-          </LinearGradient>
-        </View>
-      );
-    }
-
-    // Default Not Registered -> Register CTA
-    return (
-      <TouchableOpacity style={styles.ctaButton} activeOpacity={0.85} onPress={handleRegister}>
-        <LinearGradient colors={['#F0D58C', '#E4BC66', '#B9892F']} style={styles.gradientCta}>
-          <Text style={styles.ctaIcon}>🎟️</Text>
-          <View>
-            <Text style={styles.ctaTitle}>REGISTER NOW (₹{competition.entryFee})</Text>
-            <Text style={styles.ctaSub}>Only {competition.remainingSpots} spots remaining</Text>
-          </View>
-        </LinearGradient>
-      </TouchableOpacity>
-    );
   };
 
   // -------------------------------------------------------------
@@ -387,7 +275,7 @@ export const CompetitionDetailsScreen: React.FC<Props> = ({ navigation, route })
                 ]}
               />
               <Text style={styles.statusText}>
-                {competition.currentState?.replace('_', ' ') || 'Registration Open'}
+                {competition.currentState?.replace(/_/g, ' ') || 'Registration Open'}
               </Text>
             </View>
           </View>
@@ -691,7 +579,26 @@ export const CompetitionDetailsScreen: React.FC<Props> = ({ navigation, route })
       </ScrollView>
 
       {/* FIXED STICKY FOOTER CTA (DYNAMIC) */}
-      <View style={styles.footerStickyBar}>{renderPrimaryCTA()}</View>
+      <View style={styles.footerStickyBar}>
+        <TouchableOpacity
+          style={styles.ctaButton}
+          activeOpacity={ctaConfig.disabled ? 1 : 0.85}
+          onPress={handleCTAPress}
+          disabled={ctaConfig.disabled}
+        >
+          <LinearGradient colors={ctaConfig.gradientColors} style={styles.gradientCta}>
+            {registerLoading ? (
+              <ActivityIndicator size="small" color="#080B0D" />
+            ) : (
+              <Text style={styles.ctaIcon}>{ctaConfig.icon}</Text>
+            )}
+            <View>
+              <Text style={styles.ctaTitle}>{ctaConfig.text}</Text>
+              {ctaConfig.subText && <Text style={styles.ctaSub}>{ctaConfig.subText}</Text>}
+            </View>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };

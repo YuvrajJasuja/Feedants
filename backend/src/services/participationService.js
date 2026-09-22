@@ -4,7 +4,7 @@ const User = require('../models/User');
 const { calculateCompetitionState } = require('../utils/competitionState');
 
 const registerUserForCompetition = async (competitionId, userId) => {
-  // 1. Verify user exists or create a demo user if placeholder ID sent
+  // 1. Verify user exists or resolve placeholder
   let user = await User.findById(userId);
   if (!user) {
     user = await User.findOne();
@@ -18,14 +18,14 @@ const registerUserForCompetition = async (competitionId, userId) => {
   }
   const effectiveUserId = user._id;
 
-  // 2. Check existing participation first to avoid unneeded lock attempts
+  // 2. Check existing participation - HTTP 409 Conflict if already registered
   const existing = await Participation.findOne({
     competitionId,
     userId: effectiveUserId,
   });
   if (existing) {
-    const error = new Error('User is already registered for this competition.');
-    error.statusCode = 400;
+    const error = new Error('You are already registered for this competition.');
+    error.statusCode = 409;
     error.code = 'ALREADY_REGISTERED';
     throw error;
   }
@@ -40,8 +40,8 @@ const registerUserForCompetition = async (competitionId, userId) => {
   }
 
   const stateInfo = calculateCompetitionState(rawComp);
-
   const now = new Date();
+
   if (now < new Date(rawComp.registrationStart)) {
     const error = new Error('Registration has not started yet.');
     error.statusCode = 400;
@@ -65,11 +65,10 @@ const registerUserForCompetition = async (competitionId, userId) => {
 
   /**
    * ATOMIC CONCURRENCY STRATEGY:
-   * We execute an atomic findOneAndUpdate operation in MongoDB.
-   * Condition: registeredParticipants MUST be strictly less than maxParticipants.
-   * This guarantees that even if 100 simultaneous HTTP requests hit this endpoint,
-   * MongoDB atomically increments registeredParticipants until maxParticipants is reached.
-   * Overbooking is physically impossible at the database engine level.
+   * Execute an atomic findOneAndUpdate operation in MongoDB.
+   * Condition: registeredParticipants MUST be strictly less than maxParticipants ($lt).
+   * This guarantees that even under concurrent burst requests, MongoDB atomically
+   * increments registeredParticipants without race conditions or overbooking.
    */
   const updatedCompetition = await Competition.findOneAndUpdate(
     {
@@ -92,11 +91,11 @@ const registerUserForCompetition = async (competitionId, userId) => {
     }
     const error = new Error('Registration failed because competition is closed or unavailable.');
     error.statusCode = 400;
-    error.code = 'REGISTRATION_FAILED';
+    error.code = 'REGISTRATION_CLOSED';
     throw error;
   }
 
-  // 4. Create Participation Record with Compound Unique Index ({ userId, competitionId })
+  // 4. Create Participation Record enforcing compound unique index ({ userId, competitionId })
   try {
     const participation = await Participation.create({
       userId: effectiveUserId,
@@ -113,12 +112,12 @@ const registerUserForCompetition = async (competitionId, userId) => {
       competitionState: updatedStateInfo,
     };
   } catch (dbErr) {
-    // If duplicate registration error occurs via unique compound index
+    // Catch duplicate registration race condition via unique index -> HTTP 409
     if (dbErr.code === 11000) {
       // Rollback the atomic increment
       await Competition.findByIdAndUpdate(competitionId, { $inc: { registeredParticipants: -1 } });
-      const error = new Error('User is already registered for this competition.');
-      error.statusCode = 400;
+      const error = new Error('You are already registered for this competition.');
+      error.statusCode = 409;
       error.code = 'ALREADY_REGISTERED';
       throw error;
     }

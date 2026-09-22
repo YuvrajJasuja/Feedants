@@ -12,7 +12,7 @@ const COMPETITION_STATES = {
 /**
  * Dynamically computes competition lifecycle state and remaining spots based on dates & capacity.
  * @param {Object} competition - Competition mongoose doc or plain object
- * @returns {Object} { currentState, remainingSpots, isRegistrationActive, isSubmissionActive }
+ * @returns {Object} { currentState, remainingSpots, isRegistrationActive, isSubmissionActive, isJudgingActive, isResultsPublished }
  */
 function calculateCompetitionState(competition) {
   const now = new Date();
@@ -51,12 +51,16 @@ function calculateCompetitionState(competition) {
     now >= regStart && now <= regEnd && remainingSpots > 0;
 
   const isSubmissionActive = now >= subStart && now <= subEnd;
+  const isJudgingActive = now >= subEnd && now < resultDate;
+  const isResultsPublished = now >= resultDate;
 
   return {
     currentState,
     remainingSpots,
     isRegistrationActive,
     isSubmissionActive,
+    isJudgingActive,
+    isResultsPublished,
     maxParticipants,
     registeredParticipants: registeredCount,
   };

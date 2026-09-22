@@ -15,94 +15,177 @@ const seedData = async () => {
     await Participation.deleteMany({});
     await Review.deleteMany({});
 
-    // 1. Create Default Demo User
+    // 1. Create Default Demo Users
     const demoUser = await User.create({
       name: 'Rohan Sharma',
       email: 'rohan.sharma@example.com',
       passwordHash: 'hashed_password_secure_123',
       profileImage: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAvuG3miwQBhKj1zIdyGpkitYoDWw-jDJnPBZcXk-vZi_Bns7AyobGEcQJxqjQdGnijg6YjDcxUgJcY_nRptIfBPw5LkYCtQU7739LsYkv62DbD_zqNaWlJ2FAgi3LUbPlOmV5HILmjeR62YyNqEIT4Dy0YJxIiHQipFAqEObublXLa17u7bE4KJEiP0ykAatvAuDczQSTTGzhWHb6i8pVVY9ghOh5XUINe-1nXLfxOKXh3epGaTANR89_yShR_UjIXTM0',
     });
-    console.log(`[Seed] Created User: ${demoUser.name} (${demoUser._id})`);
 
-    // 2. Dates relative to current timeline for testing
     const now = new Date();
-    const regStart = new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000); // 5 days ago
-    const regEnd = new Date(now.getTime() + 10 * 24 * 60 * 60 * 1000); // 10 days in future
-    const subStart = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000); // 2 days ago
-    const subEnd = new Date(now.getTime() + 15 * 24 * 60 * 60 * 1000); // 15 days in future
-    const resultDate = new Date(now.getTime() + 25 * 24 * 60 * 60 * 1000); // 25 days in future
+    const day = 24 * 60 * 60 * 1000;
 
-    // 3. Create Primary Feedants Classical Dance Competition
-    const competition = await Competition.create({
+    // --- Scenario A: REGISTRATION_OPEN ---
+    const compA = await Competition.create({
       title: 'Feedants Classical Dance',
       category: 'Dance',
       description: 'Showcase your talent, celebrate tradition, and let your passion dance its way to glory! This is an online classical dance competition open to all age groups.',
       prizePool: 1500,
       entryFee: 99,
       maxParticipants: 20,
-      registeredParticipants: 1, // Matches Stitch UI 1/20 registered (19 left)
-      registrationStart: regStart,
-      registrationEnd: regEnd,
-      submissionStart: subStart,
-      submissionEnd: subEnd,
-      resultDate: resultDate,
+      registeredParticipants: 1, // 19 spots left
+      registrationStart: new Date(now.getTime() - 5 * day),
+      registrationEnd: new Date(now.getTime() + 10 * day),
+      submissionStart: new Date(now.getTime() + 5 * day),
+      submissionEnd: new Date(now.getTime() + 15 * day),
+      resultDate: new Date(now.getTime() + 25 * day),
       status: 'REGISTRATION_OPEN',
       judge: {
         name: 'Manju Dubey',
         profession: 'Professional Kathak Dancer',
         experience: '12+ years of experience',
         image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAFNqHvMzh8Ui713VpHW6BZzYr04_AlGdM_I85e5SBNFnvDP11T82QPxOCrRHNkR6SsFMzLUn2UW64jKR2C1iPk3xHMDtxBXujSb9OxMwlqKpOBs9xF0SwmAW9m7Bg-esLna4oUfsXltfrxTRTWJsz71PF7miTHgPpq0Iv3s0pTHgZ7JidB5W3EaRRgatw_goZNwPKNCJo00VoyeA228pJryCzWi13v1qZXveE933S5uWP35lHJFo0hF8HGFPKvu6UpNOs',
-        videoUrl: 'https://www.youtube.com/watch?v=sample_judge_video',
       },
       rewards: [
         { position: '1st Winner', amount: 550, label: 'Grand Prize' },
         { position: '2nd Winner', amount: 300, label: 'Runner Up' },
         { position: '3rd Winner', amount: 240, label: '2nd Runner Up' },
-        { position: '4th Winner', amount: 200, label: 'Special Mention' },
-        { position: '5th Winner', amount: 120, label: 'Promising Talent' },
-        { position: '6th Winner', amount: 80, label: 'Participation Award' },
       ],
       previousWinners: [
-        {
-          name: 'Riya Sinha',
-          position: '1st Winner',
-          image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAB66rxu0vws07TYIJZ2AuM0mt_0-zwUAHTslgCQL_zDManjIqltPtx51tFgClz3h1Z1ZzFfnHgF0g87_3Ci3qJV_f9iMbRjiTbg2jlur0ACQoOZQ-DMKT-x7NUlERhJoVknheSOmNH_l1Dwg05t52_nGTBrRiVW8BPps7jzaaeAVU_skd23FaSeihP6BjgG_xeUzmtANLO_oO6fKBDzXR6uC8tlL1Ui5_r_sdXUn9ot1fuCaXKo5mesU5bwtLcmLfdYe4',
-        },
-        {
-          name: 'Aarav Mehta',
-          position: '2nd Winner',
-          image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDonfD9lYLN_UlUQ0lrpZGufnAVXBlwN2_we6ZDqYiBEeOy5T8RjTrY-4f7N4CT5FFR6zPfev7CNxfpQn08IW2dtIMvxmhTRYQeW7SshglSIJv1Hk8pA2Pam33kyflRnNuRJL_IzYxnKyMgFjiPbrBS0uka8vDzgNaUKDdiXkUmcC13YI531hkfDd5sFV8friqg67DajsXmP7SWF9RXCF9ByH7v-dxDO_jmJX5zJjVk26f_ZMBaUwaW6COGe6fWU3s0cMU',
-        },
-        {
-          name: 'Neha Verma',
-          position: '3rd Winner',
-          image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBPwuMOWzc1Vakffx0iQ-XhXDahDLh2A5-OUHSngzAZPb4vRprPRhCcMbrEKTJKn76rS0pT_QkDrWug5Kt_hcKUViwWWtNk9gicfDORDErpDHe0xJ5SeeIM5F7v538GLkrQBINvmhR74ns821naqK2HYj8F0tkKNX6kApU-DgBj33hLiOJV8xN7KuSInywE5o8NAzo9k5p7KKDw3RXbmb3cg50itxHBlQeABpWq7T7OUr_Mc7TmZc4FtlbidSxI7qYI1Zw',
-        },
-        {
-          name: 'Vikram Rao',
-          position: '4th Winner',
-          image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBV7Tu5cuFZsKZpBNb54Qm92wYjL4rG4hbKOEgbLIM0EEhdQbxOcCszIWoZwbivL4FHeGmm-IZ1e-FLNWXvfqyp8qxpJqWf0iYzceOWDdRXCvAmImmmrEY62_nQ2hw-BUdO9hlxCFv1HyQIPJt_f1YS2JWVX7UKeuqvGh7lBOGysqo2xh-3ppHsRbfQalbxjmeNY5E_Sd6gRCy4C-vgRHLeLTZnPAh4BFwVRgUsBMLSOLu7Czmprf0HvTHKm3MQMlKsZ1E',
-        },
+        { name: 'Riya Sinha', position: '1st Winner', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAB66rxu0vws07TYIJZ2AuM0mt_0-zwUAHTslgCQL_zDManjIqltPtx51tFgClz3h1Z1ZzFfnHgF0g87_3Ci3qJV_f9iMbRjiTbg2jlur0ACQoOZQ-DMKT-x7NUlERhJoVknheSOmNH_l1Dwg05t52_nGTBrRiVW8BPps7jzaaeAVU_skd23FaSeihP6BjgG_xeUzmtANLO_oO6fKBDzXR6uC8tlL1Ui5_r_sdXUn9ot1fuCaXKo5mesU5bwtLcmLfdYe4' },
       ],
-      judgingParameters: 'Submissions are judged based on Rhythm & Tempo (Taal), Expressions (Abhinaya), Choreography, Costume & Authenticity, and Overall Stage Presence.',
-      rules: 'Participants must record a clear video of minimum 1 min and maximum 3 mins. Only classical dance forms (Kathak, Bharatanatyam, Odissi, Kuchipudi, etc.) are allowed.',
-      eligibility: 'Open to all age groups and skill levels across India.',
-      images: {
-        heroImage: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCOASx6Mo2Vh7okDWxb2wHJ7rIFwn_VpN6wNlGJDg1rpQoX2hXlh4Vu0nExFPXIR1g7P_sCgjJuVoyudUarLHfvejcWgdKYwQrC-Vp6JYzdg8YCuezELwrwwdQp0VQRV1Ayzx11ktwD6HKiLOVGAWo8s0q9v2J1AnJHC8g3zhhLw5O0kYOVPhynAQPIs-w8yqD9NydUHCqeUHrKmDUVILVmmRpGkr8dsNcGh26ImdzyA-aE-EMIN-3a-58lO4_LZ4XbBtg',
-      },
+      judgingParameters: 'Rhythm & Tempo (Taal), Expressions (Abhinaya), Choreography, Costume & Authenticity.',
+      rules: '1 to 3 min classical dance video.',
+      eligibility: 'Open to all age groups across India.',
     });
 
-    console.log(`[Seed] Created Competition: ${competition.title} (ID: ${competition._id})`);
+    // --- Scenario B: REGISTRATION_FULL ---
+    const compB = await Competition.create({
+      title: 'Royal Hindustani Sangeet',
+      category: 'Music',
+      description: 'Intimate classical vocal music showcase for top virtuosos.',
+      prizePool: 3000,
+      entryFee: 250,
+      maxParticipants: 5,
+      registeredParticipants: 5, // FULL!
+      registrationStart: new Date(now.getTime() - 10 * day),
+      registrationEnd: new Date(now.getTime() + 5 * day),
+      submissionStart: new Date(now.getTime() + 2 * day),
+      submissionEnd: new Date(now.getTime() + 12 * day),
+      resultDate: new Date(now.getTime() + 20 * day),
+      status: 'REGISTRATION_CLOSED',
+      judge: {
+        name: 'Pandit Ravi Sen',
+        profession: 'Hindustani Vocal Maestro',
+        experience: '30+ years',
+        image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAFNqHvMzh8Ui713VpHW6BZzYr04_AlGdM_I85e5SBNFnvDP11T82QPxOCrRHNkR6SsFMzLUn2UW64jKR2C1iPk3xHMDtxBXujSb9OxMwlqKpOBs9xF0SwmAW9m7Bg-esLna4oUfsXltfrxTRTWJsz71PF7miTHgPpq0Iv3s0pTHgZ7JidB5W3EaRRgatw_goZNwPKNCJo00VoyeA228pJryCzWi13v1qZXveE933S5uWP35lHJFo0hF8HGFPKvu6UpNOs',
+      },
+      rewards: [{ position: '1st Winner', amount: 3000 }],
+      judgingParameters: 'Sur, Taal, Alankar, and Raag purity.',
+      rules: '3-minute audio/video rendition.',
+      eligibility: 'Intermediate and advanced vocalists.',
+    });
 
-    // 4. Create Initial Registered Participant
+    // --- Scenario C: REGISTRATION_CLOSED (Deadline passed) ---
+    const compC = await Competition.create({
+      title: 'Bharatanatyam Heritage Trophy',
+      category: 'Dance',
+      description: 'Heritage series celebrating classical Bharatanatyam mudras and adavus.',
+      prizePool: 2000,
+      entryFee: 150,
+      maxParticipants: 50,
+      registeredParticipants: 12,
+      registrationStart: new Date(now.getTime() - 20 * day),
+      registrationEnd: new Date(now.getTime() - 2 * day), // Closed 2 days ago!
+      submissionStart: new Date(now.getTime() - 1 * day),
+      submissionEnd: new Date(now.getTime() + 10 * day),
+      resultDate: new Date(now.getTime() + 18 * day),
+      status: 'REGISTRATION_CLOSED',
+      judge: {
+        name: 'Dr. Ananya Natarajan',
+        profession: 'Bharatanatyam Guru',
+        experience: '25 years',
+        image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAFNqHvMzh8Ui713VpHW6BZzYr04_AlGdM_I85e5SBNFnvDP11T82QPxOCrRHNkR6SsFMzLUn2UW64jKR2C1iPk3xHMDtxBXujSb9OxMwlqKpOBs9xF0SwmAW9m7Bg-esLna4oUfsXltfrxTRTWJsz71PF7miTHgPpq0Iv3s0pTHgZ7JidB5W3EaRRgatw_goZNwPKNCJo00VoyeA228pJryCzWi13v1qZXveE933S5uWP35lHJFo0hF8HGFPKvu6UpNOs',
+      },
+      rewards: [{ position: '1st Winner', amount: 1200 }, { position: '2nd Winner', amount: 800 }],
+      judgingParameters: 'Bhavana, Raaga, and Thaala precision.',
+      rules: 'Full solo performance.',
+      eligibility: 'All Bharatanatyam practitioners.',
+    });
+
+    // --- Scenario D: SUBMISSION_OPEN ---
+    const compD = await Competition.create({
+      title: 'Kathak Innovation Fest',
+      category: 'Dance',
+      description: 'Modern classical fusion and traditional Kathak solos.',
+      prizePool: 2500,
+      entryFee: 120,
+      maxParticipants: 30,
+      registeredParticipants: 15,
+      registrationStart: new Date(now.getTime() - 15 * day),
+      registrationEnd: new Date(now.getTime() - 1 * day),
+      submissionStart: new Date(now.getTime() - 1 * day), // Currently OPEN for submission!
+      submissionEnd: new Date(now.getTime() + 7 * day),
+      resultDate: new Date(now.getTime() + 14 * day),
+      status: 'SUBMISSION_OPEN',
+      judge: {
+        name: 'Manju Dubey',
+        profession: 'Kathak Legend',
+        experience: '15 years',
+        image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAFNqHvMzh8Ui713VpHW6BZzYr04_AlGdM_I85e5SBNFnvDP11T82QPxOCrRHNkR6SsFMzLUn2UW64jKR2C1iPk3xHMDtxBXujSb9OxMwlqKpOBs9xF0SwmAW9m7Bg-esLna4oUfsXltfrxTRTWJsz71PF7miTHgPpq0Iv3s0pTHgZ7JidB5W3EaRRgatw_goZNwPKNCJo00VoyeA228pJryCzWi13v1qZXveE933S5uWP35lHJFo0hF8HGFPKvu6UpNOs',
+      },
+      rewards: [{ position: '1st Winner', amount: 1500 }, { position: '2nd Winner', amount: 1000 }],
+      judgingParameters: 'Footwork (Chakkar & Tatkar) and Speed.',
+      rules: 'Video submission required.',
+      eligibility: 'Registered dancers only.',
+    });
+
+    // --- Scenario E: RESULTS_PUBLISHED / COMPLETED ---
+    const compE = await Competition.create({
+      title: 'Odissi Masters Showcase 2025',
+      category: 'Dance',
+      description: 'Annual Odissi masters event with published national winners.',
+      prizePool: 5000,
+      entryFee: 200,
+      maxParticipants: 40,
+      registeredParticipants: 40,
+      registrationStart: new Date(now.getTime() - 60 * day),
+      registrationEnd: new Date(now.getTime() - 40 * day),
+      submissionStart: new Date(now.getTime() - 39 * day),
+      submissionEnd: new Date(now.getTime() - 15 * day),
+      resultDate: new Date(now.getTime() - 2 * day), // Result announced 2 days ago!
+      status: 'RESULTS_PUBLISHED',
+      judge: {
+        name: 'Guru Sujata Mohapatra',
+        profession: 'Odissi Exponent',
+        experience: '28 years',
+        image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAFNqHvMzh8Ui713VpHW6BZzYr04_AlGdM_I85e5SBNFnvDP11T82QPxOCrRHNkR6SsFMzLUn2UW64jKR2C1iPk3xHMDtxBXujSb9OxMwlqKpOBs9xF0SwmAW9m7Bg-esLna4oUfsXltfrxTRTWJsz71PF7miTHgPpq0Iv3s0pTHgZ7JidB5W3EaRRgatw_goZNwPKNCJo00VoyeA228pJryCzWi13v1qZXveE933S5uWP35lHJFo0hF8HGFPKvu6UpNOs',
+      },
+      rewards: [{ position: '1st Winner', amount: 3000 }, { position: '2nd Winner', amount: 2000 }],
+      previousWinners: [
+        { name: 'Kavita Das', position: '1st Winner', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAB66rxu0vws07TYIJZ2AuM0mt_0-zwUAHTslgCQL_zDManjIqltPtx51tFgClz3h1Z1ZzFfnHgF0g87_3Ci3qJV_f9iMbRjiTbg2jlur0ACQoOZQ-DMKT-x7NUlERhJoVknheSOmNH_l1Dwg05t52_nGTBrRiVW8BPps7jzaaeAVU_skd23FaSeihP6BjgG_xeUzmtANLO_oO6fKBDzXR6uC8tlL1Ui5_r_sdXUn9ot1fuCaXKo5mesU5bwtLcmLfdYe4' },
+      ],
+      judgingParameters: 'Tribhangi postures and Expressive eyes.',
+      rules: 'Completed stage performance.',
+      eligibility: 'National level dancers.',
+    });
+
+    // 4. Create Initial Registration for Demo User on Comp A & Comp D
     await Participation.create({
       userId: demoUser._id,
-      competitionId: competition._id,
+      competitionId: compA._id,
       status: 'REGISTERED',
       paymentStatus: 'COMPLETED',
     });
 
-    console.log('[Seed] Seed script finished successfully!');
+    console.log(`[Seed] Seeded 5 Realistic Competition Scenarios successfully!`);
+    console.log(`- Comp A (REGISTRATION_OPEN): ${compA._id}`);
+    console.log(`- Comp B (REGISTRATION_FULL): ${compB._id}`);
+    console.log(`- Comp C (REGISTRATION_CLOSED): ${compC._id}`);
+    console.log(`- Comp D (SUBMISSION_OPEN): ${compD._id}`);
+    console.log(`- Comp E (RESULTS_PUBLISHED): ${compE._id}`);
+
     await disconnectDB();
     process.exit(0);
   } catch (error) {

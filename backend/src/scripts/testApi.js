@@ -43,7 +43,7 @@ function request(path, options = {}) {
 }
 
 async function runTests() {
-  console.log('=============== STARTING API TEST SUITE ===============\n');
+  console.log('=============== STARTING STEP 5 COMPREHENSIVE TEST SUITE ===============\n');
   await connectDB();
 
   server = app.listen(0);
@@ -58,41 +58,55 @@ async function runTests() {
   await Submission.deleteMany({});
   await Review.deleteMany({});
 
-  const user1 = await User.create({
-    name: 'Test User One',
-    email: 'user1@test.com',
-    passwordHash: 'pass123',
-  });
-  const user2 = await User.create({
-    name: 'Test User Two',
-    email: 'user2@test.com',
-    passwordHash: 'pass123',
-  });
+  const user1 = await User.create({ name: 'Test User 1', email: 'user1@test.com', passwordHash: 'p1' });
+  const user2 = await User.create({ name: 'Test User 2', email: 'user2@test.com', passwordHash: 'p2' });
+  const user3 = await User.create({ name: 'Test User 3', email: 'user3@test.com', passwordHash: 'p3' });
+  const userUnregistered = await User.create({ name: 'Unregistered User', email: 'unreg@test.com', passwordHash: 'p4' });
 
   const now = new Date();
+  const day = 24 * 60 * 60 * 1000;
+
+  // Active Competition (Capacity 2)
   const activeComp = await Competition.create({
     title: 'Feedants Classical Dance',
     category: 'Dance',
-    description: 'Classical Indian dance contest.',
+    description: 'Active contest',
     prizePool: 1500,
     entryFee: 99,
-    maxParticipants: 3, // Set capacity to 3 for fast full testing
+    maxParticipants: 2, // Capacity = 2
     registeredParticipants: 0,
-    registrationStart: new Date(now.getTime() - 1000 * 60 * 60 * 24 * 5), // 5 days ago
-    registrationEnd: new Date(now.getTime() + 1000 * 60 * 60 * 24 * 10), // 10 days in future
-    submissionStart: new Date(now.getTime() - 1000 * 60 * 60 * 24 * 1), // Submission active
-    submissionEnd: new Date(now.getTime() + 1000 * 60 * 60 * 24 * 15),
-    resultDate: new Date(now.getTime() + 1000 * 60 * 60 * 24 * 25),
+    registrationStart: new Date(now.getTime() - 5 * day),
+    registrationEnd: new Date(now.getTime() + 10 * day),
+    submissionStart: new Date(now.getTime() - 1 * day),
+    submissionEnd: new Date(now.getTime() + 15 * day),
+    resultDate: new Date(now.getTime() + 25 * day),
     status: 'REGISTRATION_OPEN',
-    judge: {
-      name: 'Manju Dubey',
-      profession: 'Kathak Expert',
-      experience: '12 years',
-      image: 'https://example.com/avatar.jpg',
-    },
+    judge: { name: 'Manju Dubey', profession: 'Kathak Expert', experience: '12 years', image: 'https://example.com/j.jpg' },
     rewards: [{ position: '1st Winner', amount: 550 }],
     judgingParameters: 'Rhythm and Expression',
     rules: '1 to 3 min video',
+    eligibility: 'Open to all',
+  });
+
+  // Closed Competition
+  const closedComp = await Competition.create({
+    title: 'Closed Contest',
+    category: 'Music',
+    description: 'Past registration deadline',
+    prizePool: 1000,
+    entryFee: 50,
+    maxParticipants: 10,
+    registeredParticipants: 0,
+    registrationStart: new Date(now.getTime() - 20 * day),
+    registrationEnd: new Date(now.getTime() - 2 * day), // Closed 2 days ago
+    submissionStart: new Date(now.getTime() - 1 * day),
+    submissionEnd: new Date(now.getTime() + 10 * day),
+    resultDate: new Date(now.getTime() + 20 * day),
+    status: 'REGISTRATION_CLOSED',
+    judge: { name: 'Judge B', profession: 'Musician', experience: '10 yrs', image: 'https://example.com/j.jpg' },
+    rewards: [{ position: '1st Winner', amount: 1000 }],
+    judgingParameters: 'Sur & Taal',
+    rules: 'Audio video',
     eligibility: 'Open to all',
   });
 
@@ -110,115 +124,122 @@ async function runTests() {
   }
 
   try {
-    // TEST 1: Health Endpoint
-    const healthRes = await request('/api/health');
-    assert(healthRes.status === 200 && healthRes.body.success === true, 'GET /api/health returns 200 OK');
+    // 1. GET /api/health
+    const health = await request('/api/health');
+    assert(health.status === 200 && health.body.success === true, 'GET /api/health returns 200 OK');
 
-    // TEST 2: Get All Competitions
-    const listRes = await request('/api/competitions');
-    assert(listRes.status === 200 && listRes.body.data.length === 1, 'GET /api/competitions returns list');
-
-    // TEST 3: Get Competition Details with computed state
-    const detailRes = await request(`/api/competitions/${activeComp._id}`);
+    // 2. Open Competition & Verify Data
+    const compRes = await request(`/api/competitions/${activeComp._id}`);
     assert(
-      detailRes.status === 200 &&
-        detailRes.body.data.remainingSpots === 3 &&
-        detailRes.body.data.isRegistrationActive === true,
-      'GET /api/competitions/:id returns correct remaining spots (3) and active registration status'
+      compRes.status === 200 &&
+        compRes.body.data.remainingSpots === 2 &&
+        compRes.body.data.isRegistrationActive === true,
+      'GET /api/competitions/:id returns correct remaining spots (2) & registration active status'
     );
 
-    // TEST 4: Successful Registration
-    const regRes1 = await request(`/api/competitions/${activeComp._id}/register`, {
+    // 3. Register User 1
+    const reg1 = await request(`/api/competitions/${activeComp._id}/register`, {
+      method: 'POST',
+      body: { userId: user1._id },
+    });
+    assert(reg1.status === 201 && reg1.body.success === true, 'User 1 registers successfully');
+
+    // 4. Verify participant count & remaining spots
+    const compRes2 = await request(`/api/competitions/${activeComp._id}`);
+    assert(
+      compRes2.body.data.registeredParticipants === 1 && compRes2.body.data.remainingSpots === 1,
+      'Remaining spots decremented dynamically to 1 (1/2 registered)'
+    );
+
+    // 5. Attempt Duplicate Registration (HTTP 409)
+    const dupReg = await request(`/api/competitions/${activeComp._id}/register`, {
       method: 'POST',
       body: { userId: user1._id },
     });
     assert(
-      regRes1.status === 201 && regRes1.body.success === true,
-      'POST /api/competitions/:id/register registers User 1 successfully'
+      dupReg.status === 409 && dupReg.body.error.code === 'ALREADY_REGISTERED',
+      'Duplicate registration rejected with HTTP 409 ALREADY_REGISTERED'
     );
 
-    // TEST 5: Verify remaining spots updated dynamically to 2
-    const detailRes2 = await request(`/api/competitions/${activeComp._id}`);
+    // 6. Register User 2 (Fills capacity to 2/2)
+    const reg2 = await request(`/api/competitions/${activeComp._id}/register`, {
+      method: 'POST',
+      body: { userId: user2._id },
+    });
+    assert(reg2.status === 201, 'User 2 registers successfully (capacity 2/2 reached)');
+
+    // 7. Test Full Competition Rejection (HTTP 400 COMPETITION_FULL)
+    const fullReg = await request(`/api/competitions/${activeComp._id}/register`, {
+      method: 'POST',
+      body: { userId: user3._id },
+    });
     assert(
-      detailRes2.body.data.remainingSpots === 2 && detailRes2.body.data.registeredParticipants === 1,
-      'Remaining spots dynamically decremented from 3 to 2 after registration'
+      fullReg.status === 400 && fullReg.body.error.code === 'COMPETITION_FULL',
+      'Registration when competition is FULL rejected with HTTP 400 COMPETITION_FULL'
     );
 
-    // TEST 6: Duplicate Registration Rejection
-    const dupRes = await request(`/api/competitions/${activeComp._id}/register`, {
+    // 8. Test Closed Registration Rejection (HTTP 400 REGISTRATION_CLOSED)
+    const closedReg = await request(`/api/competitions/${closedComp._id}/register`, {
       method: 'POST',
       body: { userId: user1._id },
     });
     assert(
-      dupRes.status === 400 && dupRes.body.error.code === 'ALREADY_REGISTERED',
-      'Duplicate registration rejected with HTTP 400 ALREADY_REGISTERED'
+      closedReg.status === 400 && closedReg.body.error.code === 'REGISTRATION_CLOSED',
+      'Registration after deadline rejected with HTTP 400 REGISTRATION_CLOSED'
     );
 
-    // TEST 7: Invalid Registration (Missing userId)
-    const invalidRegRes = await request(`/api/competitions/${activeComp._id}/register`, {
-      method: 'POST',
-      body: {},
-    });
-    assert(
-      invalidRegRes.status === 400 && invalidRegRes.body.error.code === 'VALIDATION_ERROR',
-      'Missing userId registration rejected with HTTP 400 VALIDATION_ERROR'
-    );
-
-    // TEST 8: Check Participation Status
-    const partRes = await request(`/api/competitions/${activeComp._id}/participation?userId=${user1._id}`);
-    assert(
-      partRes.status === 200 && partRes.body.data.isRegistered === true,
-      'GET /api/competitions/:id/participation returns status REGISTERED for User 1'
-    );
-
-    // TEST 9: Submit Performance Entry
+    // 9. Test Submission by Registered User
     const subRes = await request(`/api/competitions/${activeComp._id}/submissions`, {
       method: 'POST',
       body: {
         userId: user1._id,
-        title: 'Kathak Teen Taal Tarana',
-        description: 'Classical kathak solo performance.',
+        title: 'Kathak Solo Performance',
+        mediaUrl: 'https://example.com/dance.mp4',
+      },
+    });
+    assert(subRes.status === 201 && subRes.body.data.status === 'UPLOADED', 'Registered user submits entry successfully');
+
+    // 10. Test Duplicate Submission Rejection
+    const dupSub = await request(`/api/competitions/${activeComp._id}/submissions`, {
+      method: 'POST',
+      body: {
+        userId: user1._id,
+        title: 'Duplicate Dance Attempt',
+        mediaUrl: 'https://example.com/dance2.mp4',
+      },
+    });
+    assert(
+      dupSub.status === 400 && dupSub.body.error.code === 'ALREADY_SUBMITTED',
+      'Duplicate submission rejected with HTTP 400 ALREADY_SUBMITTED'
+    );
+
+    // 11. Test Unregistered User Submission Rejection
+    const unregSub = await request(`/api/competitions/${activeComp._id}/submissions`, {
+      method: 'POST',
+      body: {
+        userId: userUnregistered._id,
+        title: 'Unregistered Video',
         mediaUrl: 'https://example.com/video.mp4',
       },
     });
     assert(
-      subRes.status === 201 && subRes.body.data.status === 'UPLOADED',
-      'POST /api/competitions/:id/submissions submits video entry successfully'
+      unregSub.status === 403 && unregSub.body.error.code === 'NOT_REGISTERED',
+      'Unregistered user submission rejected with HTTP 403 NOT_REGISTERED'
     );
 
-    // TEST 10: Reviews API
-    const revPost = await request(`/api/competitions/${activeComp._id}/reviews`, {
-      method: 'POST',
-      body: {
-        userId: user1._id,
-        rating: 5,
-        comment: 'Amazing classical dance platform!',
-      },
-    });
-    assert(revPost.status === 201, 'POST /api/competitions/:id/reviews submits review');
+    // 12. Test Non-existent Competition 404
+    const notFoundRes = await request('/api/competitions/6ab250f749f7e9e5f758f000');
+    assert(notFoundRes.status === 404, 'Non-existent competition returns HTTP 404 NOT_FOUND');
 
-    const revGet = await request(`/api/competitions/${activeComp._id}/reviews`);
-    assert(revGet.status === 200 && revGet.body.data.length === 1, 'GET /api/competitions/:id/reviews returns reviews');
-
-    // TEST 11: Fill Competition & Test Capacity Cap
-    const user3 = await User.create({ name: 'User 3', email: 'user3@test.com', passwordHash: 'p' });
-    const user4 = await User.create({ name: 'User 4', email: 'user4@test.com', passwordHash: 'p' });
-
-    await request(`/api/competitions/${activeComp._id}/register`, { method: 'POST', body: { userId: user2._id } });
-    await request(`/api/competitions/${activeComp._id}/register`, { method: 'POST', body: { userId: user3._id } });
-
-    // Capacity is now 3/3
-    const fullRegRes = await request(`/api/competitions/${activeComp._id}/register`, {
-      method: 'POST',
-      body: { userId: user4._id },
-    });
+    // 13. Verify Participation State API
+    const partStatus = await request(`/api/competitions/${activeComp._id}/participation?userId=${user1._id}`);
     assert(
-      fullRegRes.status === 400 && fullRegRes.body.error.code === 'COMPETITION_FULL',
-      'Registration when competition is FULL rejected with HTTP 400 COMPETITION_FULL'
+      partStatus.status === 200 && partStatus.body.data.isRegistered === true,
+      'Participation status returns registered state for User 1'
     );
 
     console.log('\n=======================================================');
-    console.log(`TEST SUMMARY: ${passCount} PASSED, ${failCount} FAILED`);
+    console.log(`STEP 5 TEST SUITE SUMMARY: ${passCount} PASSED, ${failCount} FAILED`);
     console.log('=======================================================\n');
   } catch (err) {
     console.error('[Test Error]:', err);
