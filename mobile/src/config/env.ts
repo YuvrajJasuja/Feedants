@@ -27,19 +27,20 @@ const ENV_CONFIGS: Record<EnvironmentMode, Omit<EnvConfig, 'apiUrl'>> = {
  */
 export const getEnvConfig = (): EnvConfig => {
   const rawApiUrl = process.env.EXPO_PUBLIC_API_URL;
-  const envMode = (process.env.EXPO_PUBLIC_ENV || 'development') as EnvironmentMode;
+  const envMode = (process.env.EXPO_PUBLIC_ENV || 'production') as EnvironmentMode;
 
-  if (!rawApiUrl || rawApiUrl.includes('YOUR_BACKEND_URL')) {
-    console.warn(
-      '[ENV WARNING] EXPO_PUBLIC_API_URL is missing or unconfigured in .env file. Falling back to default local dev endpoint.'
-    );
-  }
-
-  const apiUrl = rawApiUrl && !rawApiUrl.includes('YOUR_BACKEND_URL')
-    ? rawApiUrl
+  let apiUrl = rawApiUrl && !rawApiUrl.includes('YOUR_BACKEND_URL')
+    ? rawApiUrl.trim()
     : 'http://localhost:5000/api';
 
-  const baseConfig = ENV_CONFIGS[envMode] || ENV_CONFIGS.development;
+  if (apiUrl.endsWith('/')) {
+    apiUrl = apiUrl.slice(0, -1);
+  }
+  if (!apiUrl.endsWith('/api')) {
+    apiUrl = `${apiUrl}/api`;
+  }
+
+  const baseConfig = ENV_CONFIGS[envMode] || ENV_CONFIGS.production;
 
   return {
     ...baseConfig,
