@@ -1,21 +1,17 @@
 {
   "expo": {
     "name": "Feedants",
-    "slug": "feedants-mobile",
+    "slug": "feedants",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#080B0D",
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#080B0D"
-    },
     "ios": {
       "supportsTablet": true
     },
     "android": {
+      "package": "com.yuvraj.feedants",
       "adaptiveIcon": {
         "backgroundColor": "#080B0D",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -28,7 +24,21 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-font"
-    ]
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#080B0D"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "17926686-4daa-43fd-8fe6-49ca5342544d"
+      }
+    },
+    "owner": "yuvraj11981s-team"
   }
 }

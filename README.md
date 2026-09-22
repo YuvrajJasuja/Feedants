@@ -7,7 +7,7 @@ A production-grade, full-stack React Native Expo mobile application and Express/
 ## 📌 Overview
 - **Mobile Application**: Cross-platform React Native mobile client powered by Expo (SDK 52) and TypeScript.
 - **Primary Module**: Core Competition Details experience — dynamic competition discovery, key metrics, countdown timers, judges, dynamic tabs, previous winners, tiered rewards, ratings/reviews, and multi-step performance submissions.
-- **Backend API**: Node.js + Express.js REST service deployed on Render (`https://feedants-jv9a.onrender.com/api`).
+- **Backend API**: Node.js + Express.js REST service deployed on Render
 - **Database**: MongoDB Atlas cloud database with Mongoose ORM models, custom indexes, and atomic `$expr`/`$inc` capacity controls.
 - **Authentication**: Stateless JWT token authentication with bcrypt password hashing and 401 token expiration interceptors.
 
@@ -177,7 +177,7 @@ RATE_LIMIT_MAX_REQUESTS=100
 
 ```env
 # Production API Endpoint URL (Render Backend)
-EXPO_PUBLIC_API_URL=https://feedants-jv9a.onrender.com/api
+EXPO_PUBLIC_API_URL=
 
 # Environment Mode
 EXPO_PUBLIC_ENV=production
@@ -235,7 +235,7 @@ npx expo start
    - Environment Variables: Add `NODE_ENV=production`, `MONGODB_URI`, `JWT_SECRET`.
 
 3. **Frontend Production Build**:
-   - Update `mobile/.env` with production backend URL (`EXPO_PUBLIC_API_URL=https://your-backend.onrender.com/api`).
+   - Update `mobile/.env` with production backend URL (`EXPO_PUBLIC_API_URL`).
    - Run EAS build: `eas build -p android --profile preview` to generate standalone APK.
 
 ---
@@ -317,16 +317,3 @@ Comprehensive QA audit performed across:
 
 - **Email**: `rohan.sharma@example.com`
 - **Password**: `Password123!`
-
----
-
-## ✅ Submission Checklist
-
-- [x] GitHub Repository created & updated
-- [x] Full-Stack source code committed
-- [x] Professional `README.md` at repository root
-- [x] Environment template files (`.env.example` in `backend/` and `mobile/`)
-- [x] Backend deployed on Render (`https://feedants-jv9a.onrender.com/api`)
-- [x] MongoDB Atlas cloud database connected
-- [x] EAS Build configuration (`eas.json`) ready for APK generation
-- [x] Zero hardcoded secrets in source code
