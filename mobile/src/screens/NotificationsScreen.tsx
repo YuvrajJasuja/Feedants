@@ -3,11 +3,11 @@ import {
   StyleSheet,
   View,
   Text,
-  SafeAreaView,
   TouchableOpacity,
   ScrollView,
   StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import CategoryChip from '../components/CategoryChip';
 import EmptyState from '../components/EmptyState';
 

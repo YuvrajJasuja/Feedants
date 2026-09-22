@@ -3,12 +3,12 @@ import {
   StyleSheet,
   View,
   Text,
-  SafeAreaView,
   TouchableOpacity,
   ScrollView,
   StatusBar,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 import { competitionApi, CompetitionDetails } from '../services/competitionApi';
 import { submissionApi } from '../services/submissionApi';
@@ -34,11 +34,11 @@ export const UploadSubmissionScreen: React.FC<{ navigation: any; route: any }> =
   route,
 }) => {
   const { user, isAuthenticated } = useAuth();
-  const initialCompId = route?.params?.competitionId || route?.params?.id;
+  const routeCompId = route?.params?.competitionId || route?.params?.id;
 
   const [step, setStep] = useState<number>(1);
   const [competitions, setCompetitions] = useState<CompetitionDetails[]>([]);
-  const [selectedCompId, setSelectedCompId] = useState<string>(initialCompId || '');
+  const [selectedCompId, setSelectedCompId] = useState<string>(routeCompId || '');
   const [loadingComps, setLoadingComps] = useState<boolean>(true);
 
   // Selected Media State
@@ -60,24 +60,37 @@ export const UploadSubmissionScreen: React.FC<{ navigation: any; route: any }> =
   const [submissionId, setSubmissionId] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
 
+  // Sync competition ID whenever route params update
+  useEffect(() => {
+    const currentParamId = route?.params?.competitionId || route?.params?.id;
+    if (currentParamId) {
+      setSelectedCompId(currentParamId);
+    }
+  }, [route?.params?.competitionId, route?.params?.id]);
+
   useEffect(() => {
     async function loadCompetitions() {
       setLoadingComps(true);
       const res = await competitionApi.getAllCompetitions();
       if (res.success && res.data) {
         setCompetitions(res.data);
-        if (!selectedCompId && res.data.length > 0) {
+        const currentParamId = route?.params?.competitionId || route?.params?.id;
+        if (currentParamId) {
+          setSelectedCompId(currentParamId);
+        } else if (!selectedCompId && res.data.length > 0) {
           setSelectedCompId(res.data[0].id || res.data[0]._id);
         }
       }
       setLoadingComps(false);
     }
     loadCompetitions();
-  }, [initialCompId]);
+  }, []);
+
+  const activeCompId = selectedCompId || route?.params?.competitionId || route?.params?.id;
 
   const selectedCompetition = competitions.find(
-    (c) => (c.id || c._id) === selectedCompId
-  );
+    (c) => (c.id || c._id) === activeCompId
+  ) || (activeCompId ? ({ id: activeCompId, _id: activeCompId, title: 'Selected Competition' } as CompetitionDetails) : undefined);
 
   const handleNext = () => {
     if (step === 1) {
@@ -91,7 +104,7 @@ export const UploadSubmissionScreen: React.FC<{ navigation: any; route: any }> =
         Alert.alert('Title Required', 'Please enter a title for your performance submission.');
         return;
       }
-      if (!selectedCompId) {
+      if (!activeCompId) {
         Alert.alert('Competition Required', 'Please select a competition for this submission.');
         return;
       }
@@ -108,7 +121,11 @@ export const UploadSubmissionScreen: React.FC<{ navigation: any; route: any }> =
   };
 
   const handleSubmit = async () => {
-    if (!selectedCompId || !selectedMedia) return;
+    const finalCompId = activeCompId;
+    if (!finalCompId || !selectedMedia) {
+      Alert.alert('Error', 'Missing target competition or media file.');
+      return;
+    }
 
     if (!isAuthenticated) {
       Alert.alert('Sign In Required', 'Please sign in or create an account to upload a competition entry.', [
@@ -122,7 +139,7 @@ export const UploadSubmissionScreen: React.FC<{ navigation: any; route: any }> =
     setError(null);
 
     const res = await submissionApi.submitEntry({
-      competitionId: selectedCompId,
+      competitionId: finalCompId,
       userId: user?.id,
       title: title.trim(),
       description: description.trim(),
@@ -161,7 +178,7 @@ export const UploadSubmissionScreen: React.FC<{ navigation: any; route: any }> =
           competitionTitle={selectedCompetition?.title}
           onGoToMyCompetitions={() => navigation.navigate('MainTabs', { screen: 'MyCompetitions' })}
           onGoToDetails={() =>
-            navigation.navigate('CompetitionDetails', { id: selectedCompId })
+            navigation.navigate('CompetitionDetails', { id: activeCompId })
           }
         />
       </SafeAreaView>

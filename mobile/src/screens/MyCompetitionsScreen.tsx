@@ -3,12 +3,12 @@ import {
   StyleSheet,
   View,
   Text,
-  SafeAreaView,
   TouchableOpacity,
   ScrollView,
   StatusBar,
   RefreshControl,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 import { userApi, UserCompetitionItem } from '../services/userApi';
 import CompetitionCard from '../components/CompetitionCard';

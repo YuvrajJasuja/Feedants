@@ -29,9 +29,9 @@ export const getEnvConfig = (): EnvConfig => {
   const rawApiUrl = process.env.EXPO_PUBLIC_API_URL;
   const envMode = (process.env.EXPO_PUBLIC_ENV || 'production') as EnvironmentMode;
 
-  let apiUrl = rawApiUrl && !rawApiUrl.includes('YOUR_BACKEND_URL')
+  let apiUrl = rawApiUrl && !rawApiUrl.includes('YOUR_BACKEND_URL') && !rawApiUrl.includes('localhost') && !rawApiUrl.includes('127.0.0.1')
     ? rawApiUrl.trim()
-    : 'http://localhost:5000/api';
+    : 'https://feedants-jv9a.onrender.com/api';
 
   if (apiUrl.endsWith('/')) {
     apiUrl = apiUrl.slice(0, -1);

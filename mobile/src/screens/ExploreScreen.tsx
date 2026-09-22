@@ -3,7 +3,6 @@ import {
   StyleSheet,
   View,
   Text,
-  SafeAreaView,
   TouchableOpacity,
   FlatList,
   TextInput,
@@ -11,6 +10,7 @@ import {
   StatusBar,
   RefreshControl,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { competitionApi, CompetitionDetails } from '../services/competitionApi';
 import CategoryChip from '../components/CategoryChip';
 import CompetitionCard from '../components/CompetitionCard';

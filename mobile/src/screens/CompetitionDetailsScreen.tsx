@@ -6,13 +6,13 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
-  SafeAreaView,
   StatusBar,
   Dimensions,
   ActivityIndicator,
   RefreshControl,
   Alert,
 } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
 import { competitionApi, CompetitionDetails } from '../services/competitionApi';
 import { participationApi, ParticipationState } from '../services/participationApi';
@@ -32,6 +32,7 @@ interface Props {
 }
 
 export const CompetitionDetailsScreen: React.FC<Props> = ({ navigation, route }) => {
+  const insets = useSafeAreaInsets();
   const { user, isAuthenticated } = useAuth();
   const targetId = route?.params?.id || route?.params?.competitionId;
 
@@ -632,11 +633,11 @@ export const CompetitionDetailsScreen: React.FC<Props> = ({ navigation, route })
           onWriteReviewPress={handleWriteReviewPress}
         />
 
-        <View style={{ height: 100 }} />
+        <View style={{ height: 100 + insets.bottom }} />
       </ScrollView>
 
       {/* FIXED STICKY FOOTER CTA (DYNAMIC) */}
-      <View style={styles.footerStickyBar}>
+      <View style={[styles.footerStickyBar, { paddingBottom: Math.max(insets.bottom, 12) }]}>
         <TouchableOpacity
           style={styles.ctaButton}
           activeOpacity={ctaConfig.disabled ? 1 : 0.85}

@@ -14,12 +14,18 @@ import NotificationsScreen from '../screens/NotificationsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import AuthScreen from '../screens/AuthScreen';
 
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 const DummyCreateScreen = () => <View style={{ flex: 1, backgroundColor: '#080B0D' }} />;
 
 function TabNavigator() {
+  const insets = useSafeAreaInsets();
+  const bottomPadding = Math.max(insets.bottom, 6);
+  const tabHeight = 56 + bottomPadding;
+
   return (
     <Tab.Navigator
       initialRouteName="Home"
@@ -29,8 +35,8 @@ function TabNavigator() {
           backgroundColor: '#0A0E11',
           borderTopColor: 'rgba(217, 164, 65, 0.2)',
           borderTopWidth: 1,
-          height: 62,
-          paddingBottom: 8,
+          height: tabHeight,
+          paddingBottom: bottomPadding,
           paddingTop: 6,
         },
         tabBarActiveTintColor: '#D4A446',

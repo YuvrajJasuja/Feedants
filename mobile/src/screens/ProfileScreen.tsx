@@ -3,7 +3,6 @@ import {
   StyleSheet,
   View,
   Text,
-  SafeAreaView,
   TouchableOpacity,
   ScrollView,
   Image,
@@ -11,6 +10,7 @@ import {
   StatusBar,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 import PrimaryButton from '../components/PrimaryButton';
 import SecondaryButton from '../components/SecondaryButton';
