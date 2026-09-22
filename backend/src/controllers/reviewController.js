@@ -3,21 +3,34 @@ const Review = require('../models/Review');
 const getReviews = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const reviews = await Review.find({ competitionId: id })
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = Math.max(1, Math.min(100, parseInt(req.query.limit, 10) || 10));
+    const skip = (page - 1) * limit;
+
+    const totalReviews = await Review.countDocuments({ competitionId: id });
+    const allReviews = await Review.find({ competitionId: id }).lean();
+    const sumRating = allReviews.reduce((acc, curr) => acc + (curr.rating || 0), 0);
+    const averageRating = totalReviews > 0 ? Number((sumRating / totalReviews).toFixed(1)) : 0;
+
+    const paginatedReviews = await Review.find({ competitionId: id })
       .populate('userId', 'name profileImage')
       .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
       .lean();
-
-    const totalReviews = reviews.length;
-    const sumRating = reviews.reduce((acc, curr) => acc + (curr.rating || 0), 0);
-    const averageRating = totalReviews > 0 ? Number((sumRating / totalReviews).toFixed(1)) : 0;
 
     res.json({
       success: true,
-      data: reviews,
+      data: paginatedReviews,
       stats: {
         averageRating,
         totalReviews,
+      },
+      pagination: {
+        page,
+        limit,
+        total: totalReviews,
+        totalPages: Math.ceil(totalReviews / limit) || 1,
       },
     });
   } catch (error) {

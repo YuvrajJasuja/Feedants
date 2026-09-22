@@ -48,8 +48,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // APP STARTUP SESSION RESTORATION
+  // APP STARTUP SESSION RESTORATION & 401 INTERCEPTOR
   useEffect(() => {
+    apiClient.setOnUnauthorized(() => {
+      logout();
+    });
+
     async function bootstrapAsync() {
       setIsLoading(true);
       try {
@@ -80,6 +84,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
 
     bootstrapAsync();
+
+    return () => {
+      apiClient.setOnUnauthorized(null);
+    };
   }, []);
 
   const login = async (payload: LoginPayload) => {

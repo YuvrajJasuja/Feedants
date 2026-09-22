@@ -13,7 +13,9 @@ router.get('/', (req, res) => {
 
   res.json({
     success: true,
-    message: 'Feedants API is running',
+    message: 'Feedants Production-Hardened Competition API is healthy',
+    environment: process.env.NODE_ENV || 'development',
+    uptimeSeconds: Math.floor(process.uptime()),
     timestamp: new Date().toISOString(),
     database: {
       status: dbStateMap[dbState] || 'unknown',

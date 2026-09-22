@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const env = require('./config/env');
 const notFoundHandler = require('./middleware/notFound');
 const errorHandler = require('./middleware/errorHandler');
+const { generalLimiter, authLimiter, actionLimiter } = require('./middleware/rateLimiter');
 
 const healthRoutes = require('./routes/healthRoutes');
 const competitionRoutes = require('./routes/competitionRoutes');
@@ -37,9 +38,12 @@ app.use(
   })
 );
 
-// Body Parsing Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// General Rate Limiter
+app.use('/api', generalLimiter);
+
+// Body Parsing Middleware with Strict Payload Size Limits
+app.use(express.json({ limit: '100kb' }));
+app.use(express.urlencoded({ extended: true, limit: '100kb' }));
 
 // Request Logger (Development)
 if (env.nodeEnv === 'development') {
@@ -49,11 +53,11 @@ if (env.nodeEnv === 'development') {
   });
 }
 
-// API Routes
+// API Routes with Rate Limiting
 app.use('/api/health', healthRoutes);
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/me', userRoutes);
-app.use('/api/competitions', competitionRoutes);
+app.use('/api/competitions', actionLimiter, competitionRoutes);
 
 // Error Handling Middlewares
 app.use(notFoundHandler);

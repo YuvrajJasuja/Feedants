@@ -45,9 +45,19 @@ const getCompetitionById = async (id, userId = null) => {
   };
 };
 
-const getAllCompetitions = async () => {
-  const competitions = await Competition.find().lean();
-  return competitions.map((comp) => {
+const getAllCompetitions = async (page = 1, limit = 10) => {
+  const p = Math.max(1, parseInt(page, 10) || 1);
+  const l = Math.max(1, Math.min(100, parseInt(limit, 10) || 10));
+  const skip = (p - 1) * l;
+
+  const total = await Competition.countDocuments();
+  const competitions = await Competition.find()
+    .skip(skip)
+    .limit(l)
+    .sort({ createdAt: -1 })
+    .lean();
+
+  const items = competitions.map((comp) => {
     const stateInfo = calculateCompetitionState(comp);
     return {
       ...comp,
@@ -58,6 +68,16 @@ const getAllCompetitions = async () => {
       isSubmissionActive: stateInfo.isSubmissionActive,
     };
   });
+
+  return {
+    items,
+    pagination: {
+      page: p,
+      limit: l,
+      total,
+      totalPages: Math.ceil(total / l) || 1,
+    },
+  };
 };
 
 module.exports = {

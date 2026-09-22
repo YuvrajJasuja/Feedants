@@ -42,6 +42,6 @@ const submissionSchema = new mongoose.Schema(
   }
 );
 
-submissionSchema.index({ userId: 1, competitionId: 1 });
+submissionSchema.index({ userId: 1, competitionId: 1 }, { unique: true });
 
 module.exports = mongoose.model('Submission', submissionSchema);

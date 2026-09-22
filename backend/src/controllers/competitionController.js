@@ -2,10 +2,12 @@ const competitionService = require('../services/competitionService');
 
 const getCompetitions = async (req, res, next) => {
   try {
-    const competitions = await competitionService.getAllCompetitions();
+    const { page, limit } = req.query;
+    const result = await competitionService.getAllCompetitions(page, limit);
     res.json({
       success: true,
-      data: competitions,
+      data: result.items,
+      pagination: result.pagination,
     });
   } catch (error) {
     next(error);

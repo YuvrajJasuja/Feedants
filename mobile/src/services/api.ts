@@ -16,10 +16,11 @@ class ApiClient {
   private baseUrl: string;
   private timeoutMs: number;
   private authToken: string | null = null;
+  private onUnauthorizedHandler: (() => void) | null = null;
 
   constructor() {
     this.baseUrl = config.apiUrl;
-    this.timeoutMs = config.timeout || 10000;
+    this.timeoutMs = config.timeout || 15000;
   }
 
   public setAuthToken(token: string | null) {
@@ -28,6 +29,10 @@ class ApiClient {
 
   public getAuthToken(): string | null {
     return this.authToken;
+  }
+
+  public setOnUnauthorized(handler: (() => void) | null) {
+    this.onUnauthorizedHandler = handler;
   }
 
   public getBaseUrl(): string {
@@ -56,6 +61,12 @@ class ApiClient {
         signal: controller.signal,
       });
       clearTimeout(id);
+
+      if (response.status === 401 && this.authToken) {
+        if (this.onUnauthorizedHandler) {
+          this.onUnauthorizedHandler();
+        }
+      }
 
       const json = await response.json();
       if (!response.ok && json.error) {
@@ -92,6 +103,12 @@ class ApiClient {
         signal: controller.signal,
       });
       clearTimeout(id);
+
+      if (response.status === 401 && this.authToken) {
+        if (this.onUnauthorizedHandler) {
+          this.onUnauthorizedHandler();
+        }
+      }
 
       const json = await response.json();
       if (!response.ok && json.error) {
