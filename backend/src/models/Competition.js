@@ -26,6 +26,7 @@ const previousWinnerSchema = new mongoose.Schema(
     position: { type: String, required: true },
     image: { type: String, required: true },
     videoUrl: { type: String, default: '' },
+    prizeAmount: { type: String, default: '' },
   },
   { _id: false }
 );

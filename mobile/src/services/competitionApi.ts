@@ -28,7 +28,7 @@ export interface CompetitionDetails {
     videoUrl?: string;
   };
   rewards: Array<{ position: string; amount: number; label?: string }>;
-  previousWinners: Array<{ name: string; position: string; image: string; videoUrl?: string }>;
+  previousWinners: Array<{ name: string; position: string; image: string; videoUrl?: string; prizeAmount?: string }>;
   judgingParameters: string;
   rules: string;
   eligibility: string;

@@ -16,10 +16,13 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { competitionApi, CompetitionDetails } from '../services/competitionApi';
 import { participationApi, ParticipationState } from '../services/participationApi';
-import { reviewApi, ReviewItem } from '../services/reviewApi';
+import { reviewApi, ReviewItem, ReviewStats } from '../services/reviewApi';
 import { useAuth } from '../context/AuthContext';
 import { useCountdown } from '../hooks/useCountdown';
 import { getCompetitionCTA, CTAConfig } from '../utils/ctaHelper';
+import { RegistrationModal } from '../components/competition/RegistrationModal';
+import { WriteReviewModal } from '../components/competition/WriteReviewModal';
+import { ReviewsSection } from '../components/competition/ReviewsSection';
 
 const { width } = Dimensions.get('window');
 
@@ -38,8 +41,14 @@ export const CompetitionDetailsScreen: React.FC<Props> = ({ navigation, route })
   const [competition, setCompetition] = useState<CompetitionDetails | null>(null);
   const [participation, setParticipation] = useState<ParticipationState | null>(null);
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
+  const [reviewStats, setReviewStats] = useState<ReviewStats | undefined>(undefined);
   const [activeTab, setActiveTab] = useState<'about' | 'judging' | 'rules'>('about');
-  
+
+  // Modals & Action States
+  const [showRegModal, setShowRegModal] = useState<boolean>(false);
+  const [showWriteReviewModal, setShowWriteReviewModal] = useState<boolean>(false);
+  const [submitReviewLoading, setSubmitReviewLoading] = useState<boolean>(false);
+
   // Registration Action State (Button lock & feedback)
   const [registerLoading, setRegisterLoading] = useState<boolean>(false);
   const [registerError, setRegisterError] = useState<string | null>(null);
@@ -114,6 +123,9 @@ export const CompetitionDetailsScreen: React.FC<Props> = ({ navigation, route })
       const revRes = await reviewApi.getCompetitionReviews(compId);
       if (revRes.success && revRes.data) {
         setReviews(revRes.data);
+        if (revRes.stats) {
+          setReviewStats(revRes.stats);
+        }
       }
     } catch (err: any) {
       setError(err?.message || 'Unable to connect to server. Please check your connection and retry.');
@@ -133,8 +145,8 @@ export const CompetitionDetailsScreen: React.FC<Props> = ({ navigation, route })
     fetchScreenData(false);
   };
 
-  // Registration Handler with Authentication Check & Double-Tap Lock
-  const handleRegisterPress = async () => {
+  // Registration Handler -> Opens Confirmation Modal
+  const handleRegisterPress = () => {
     if (!competition || registerLoading) return;
 
     if (!isAuthenticated) {
@@ -145,6 +157,12 @@ export const CompetitionDetailsScreen: React.FC<Props> = ({ navigation, route })
       return;
     }
 
+    setShowRegModal(true);
+  };
+
+  // Registration Confirmation Handler (Triggers Backend API)
+  const handleRegisterConfirm = async () => {
+    if (!competition || registerLoading) return;
     setRegisterLoading(true);
     setRegisterError(null);
     setRegisterSuccess(null);
@@ -155,6 +173,7 @@ export const CompetitionDetailsScreen: React.FC<Props> = ({ navigation, route })
     setRegisterLoading(false);
 
     if (res.success) {
+      setShowRegModal(false);
       setRegisterSuccess('Successfully registered!');
       Alert.alert('Registration Successful', `You are registered for ${competition.title}!`);
       fetchScreenData(false); // Authoritative server re-fetch
@@ -164,6 +183,39 @@ export const CompetitionDetailsScreen: React.FC<Props> = ({ navigation, route })
         : res.error?.message || 'Registration failed.';
       setRegisterError(errorMsg);
       Alert.alert('Registration Failed', errorMsg);
+    }
+  };
+
+  // Review Handlers
+  const handleWriteReviewPress = () => {
+    if (!isAuthenticated) {
+      Alert.alert('Sign In Required', 'Please sign in to write a review for this competition.', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Sign In', onPress: () => navigation?.navigate?.('Auth') },
+      ]);
+      return;
+    }
+    setShowWriteReviewModal(true);
+  };
+
+  const handleReviewSubmit = async (rating: number, comment: string) => {
+    if (!competition) return;
+    setSubmitReviewLoading(true);
+
+    const compId = competition.id || competition._id;
+    const res = await reviewApi.submitReview(compId, { rating, comment });
+
+    setSubmitReviewLoading(false);
+
+    if (res.success) {
+      setShowWriteReviewModal(false);
+      Alert.alert('Review Submitted', 'Thank you for your valuable feedback!');
+      fetchScreenData(false);
+    } else {
+      const errorMsg = typeof res.error === 'string'
+        ? res.error
+        : res.error?.message || 'Failed to submit review.';
+      throw new Error(errorMsg);
     }
   };
 
@@ -479,6 +531,11 @@ export const CompetitionDetailsScreen: React.FC<Props> = ({ navigation, route })
                       {winner.name}
                     </Text>
                     <Text style={styles.winnerBadge}>{winner.position}</Text>
+                    {winner.prizeAmount ? (
+                      <Text style={{ color: '#D4A446', fontSize: 9, fontWeight: '700', marginTop: 1 }}>
+                        {winner.prizeAmount}
+                      </Text>
+                    ) : null}
                   </View>
                 </View>
               ))}
@@ -568,23 +625,12 @@ export const CompetitionDetailsScreen: React.FC<Props> = ({ navigation, route })
           </View>
         )}
 
-        {/* REVIEWS SECTION FROM BACKEND */}
-        <View style={styles.trustGrid}>
-          <View style={styles.reviewsCard}>
-            <View style={styles.referLeft}>
-              <Text style={styles.reviewsIcon}>💬</Text>
-              <View>
-                <Text style={styles.referTitle}>Hear From Our Users ({reviews.length})</Text>
-                <Text style={styles.referSub}>
-                  {reviews.length > 0
-                    ? `Latest review: "${reviews[0].comment.substring(0, 35)}..."`
-                    : 'Be the first participant to leave a review!'}
-                </Text>
-              </View>
-            </View>
-            <Text style={styles.arrowIcon}>›</Text>
-          </View>
-        </View>
+        {/* REVIEWS SECTION COMPONENT */}
+        <ReviewsSection
+          reviews={reviews}
+          stats={reviewStats}
+          onWriteReviewPress={handleWriteReviewPress}
+        />
 
         <View style={{ height: 100 }} />
       </ScrollView>
@@ -610,6 +656,24 @@ export const CompetitionDetailsScreen: React.FC<Props> = ({ navigation, route })
           </LinearGradient>
         </TouchableOpacity>
       </View>
+
+      {/* REGISTRATION CONFIRMATION MODAL */}
+      <RegistrationModal
+        visible={showRegModal}
+        competition={competition}
+        loading={registerLoading}
+        onClose={() => setShowRegModal(false)}
+        onConfirm={handleRegisterConfirm}
+      />
+
+      {/* WRITE REVIEW MODAL */}
+      <WriteReviewModal
+        visible={showWriteReviewModal}
+        competitionTitle={competition.title}
+        loading={submitReviewLoading}
+        onClose={() => setShowWriteReviewModal(false)}
+        onSubmit={handleReviewSubmit}
+      />
     </SafeAreaView>
   );
 };

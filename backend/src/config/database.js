@@ -19,10 +19,12 @@ const connectDB = async () => {
       const downloadDir = path.join(__dirname, '../../../.mongo-binaries');
 
       mongoMemoryServer = await MongoMemoryServer.create({
-        download: {
+        binary: {
+          version: '4.4.29',
           downloadDir,
         },
       });
+
       connectionUri = mongoMemoryServer.getUri();
       await mongoose.connect(connectionUri);
       console.log(`[Database] Connected to fallback in-memory MongoDB at ${connectionUri}`);

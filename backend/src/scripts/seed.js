@@ -53,11 +53,30 @@ const seedData = async () => {
         { position: '3rd Winner', amount: 240, label: '2nd Runner Up' },
       ],
       previousWinners: [
-        { name: 'Riya Sinha', position: '1st Winner', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAB66rxu0vws07TYIJZ2AuM0mt_0-zwUAHTslgCQL_zDManjIqltPtx51tFgClz3h1Z1ZzFfnHgF0g87_3Ci3qJV_f9iMbRjiTbg2jlur0ACQoOZQ-DMKT-x7NUlERhJoVknheSOmNH_l1Dwg05t52_nGTBrRiVW8BPps7jzaaeAVU_skd23FaSeihP6BjgG_xeUzmtANLO_oO6fKBDzXR6uC8tlL1Ui5_r_sdXUn9ot1fuCaXKo5mesU5bwtLcmLfdYe4' },
+        {
+          name: 'Riya Sinha',
+          position: '1st Winner',
+          image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAB66rxu0vws07TYIJZ2AuM0mt_0-zwUAHTslgCQL_zDManjIqltPtx51tFgClz3h1Z1ZzFfnHgF0g87_3Ci3qJV_f9iMbRjiTbg2jlur0ACQoOZQ-DMKT-x7NUlERhJoVknheSOmNH_l1Dwg05t52_nGTBrRiVW8BPps7jzaaeAVU_skd23FaSeihP6BjgG_xeUzmtANLO_oO6fKBDzXR6uC8tlL1Ui5_r_sdXUn9ot1fuCaXKo5mesU5bwtLcmLfdYe4',
+          prizeAmount: '₹ 550',
+        },
+        {
+          name: 'Ananya Roy',
+          position: '2nd Winner',
+          image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAvuG3miwQBhKj1zIdyGpkitYoDWw-jDJnPBZcXk-vZi_Bns7AyobGEcQJxqjQdGnijg6YjDcxUgJcY_nRptIfBPw5LkYCtQU7739LsYkv62DbD_zqNaWlJ2FAgi3LUbPlOmV5HILmjeR62YyNqEIT4Dy0YJxIiHQipFAqEObublXLa17u7bE4KJEiP0ykAatvAuDczQSTTGzhWHb6i8pVVY9ghOh5XUINe-1nXLfxOKXh3epGaTANR89_yShR_UjIXTM0',
+          prizeAmount: '₹ 300',
+        },
       ],
       judgingParameters: 'Rhythm & Tempo (Taal), Expressions (Abhinaya), Choreography, Costume & Authenticity.',
       rules: '1 to 3 min classical dance video.',
       eligibility: 'Open to all age groups across India.',
+    });
+
+    // Seed Sample Reviews for Comp A
+    await Review.create({
+      userId: demoUser._id,
+      competitionId: compA._id,
+      rating: 5,
+      comment: 'Fantastic organization and clear judging guidelines! Very encouraging platform for classical dancers.',
     });
 
     // --- Scenario B: REGISTRATION_FULL ---
