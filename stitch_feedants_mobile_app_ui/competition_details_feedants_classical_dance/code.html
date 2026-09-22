@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>Feedants Classical Dance - Competition Details</title>
+<!-- Google Fonts: Cormorant Garamond for luxury serif accents, Plus Jakarta Sans for UI -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,400&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=JetBrains+Mono:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN with forms and container queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            appDark: '#080B0D',
+            appDarker: '#050709',
+            cardBg: '#12161A',
+            cardBgLight: '#181E23',
+            gold: {
+              300: '#F5DE98',
+              400: '#E6C36E',
+              500: '#D4A446',
+              600: '#B88728',
+              gradientStart: '#E8C779',
+              gradientEnd: '#B98A33'
+            },
+            emeraldPill: '#052A20',
+            emeraldBorder: '#137854',
+            emeraldLight: '#10B981'
+          },
+          fontFamily: {
+            serifHeading: ['"Cormorant Garamond"', 'serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          },
+          boxShadow: {
+            goldGlow: '0 0 20px -3px rgba(212, 164, 70, 0.35)',
+            subtleGold: '0 4px 20px 0 rgba(0, 0, 0, 0.45)',
+            emeraldGlow: '0 0 10px rgba(16, 185, 129, 0.4)'
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-scrollbars">
+    /* Custom hidden scrollbars for native app carousel feel */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+<style data-purpose="decorations-and-cards">
+    .gold-border {
+      border: 1px solid rgba(217, 164, 65, 0.22);
+    }
+    .gold-border-light {
+      border: 1px solid rgba(217, 164, 65, 0.12);
+    }
+    .hero-mask {
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 100%);
+      -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%);
+    }
+    .dancer-motif-bg {
+      background-image: radial-gradient(ellipse at right top, rgba(212, 164, 70, 0.08), transparent 70%);
+    }
+  </style>
+</head>
+<body class="bg-[#040608] text-gray-200 font-sans antialiased flex justify-center min-h-screen">
+<!-- Mobile Frame Container (Simulating iOS Viewport) -->
+<main class="w-full max-w-[430px] bg-[#090D10] min-h-screen relative flex flex-col shadow-2xl overflow-x-hidden pb-44 border-x border-neutral-900/60" data-purpose="mobile-viewport">
+<!-- BEGIN: TopBar -->
+<header class="sticky top-0 z-50 bg-[#090D10]/90 backdrop-blur-md px-4 pt-3 pb-3 flex items-center justify-between border-b border-white/[0.04]">
+<!-- Go Back Pill/Button -->
+<button aria-label="Go back" class="flex items-center gap-2 text-neutral-300 hover:text-white transition group py-1 pr-2" type="button">
+<svg class="w-5 h-5 text-neutral-300 group-hover:-translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M10 19l-7-7m0 0l7-7m-7 7h18" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path>
+</svg>
+<span class="text-sm font-medium tracking-wide">Go Back</span>
+</button>
+<!-- Action Buttons (Favorite & Share) -->
+<div class="flex items-center gap-4">
+<button aria-label="Add to wishlist" class="p-1.5 rounded-full hover:bg-white/5 text-neutral-300 hover:text-white transition" type="button">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
+</svg>
+</button>
+<button aria-label="Share competition" class="p-1.5 rounded-full hover:bg-white/5 text-neutral-300 hover:text-white transition" type="button">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
+</svg>
+</button>
+</div>
+</header>
+<!-- END: TopBar -->
+<!-- BEGIN: HeroSection -->
+<section class="relative px-4 pt-3 pb-5 overflow-hidden" data-purpose="competition-hero">
+<!-- Background Kathak Classical Dancer Vignette -->
+<div class="absolute right-0 -top-6 w-[270px] h-[250px] pointer-events-none opacity-85 z-0">
+<img alt="Classical Indian Kathak Dancer" class="w-full h-full object-cover object-right-top hero-mask" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOASx6Mo2Vh7okDWxb2wHJ7rIFwn_VpN6wNlGJDg1rpQoX2hXlh4Vu0nExFPXIR1g7P_sCgjJuVoyudUarLHfvejcWgdKYwQrC-Vp6JYzdg8YCuezELwrwwdQp0VQRV1Ayzx11ktwD6HKiLOVGAWo8s0q9v2J1AnJHC8g3zhhLw5O0kYOVPhynAQPIs-w8yqD9NydUHCqeUHrKmDUVILVmmRpGkr8dsNcGh26ImdzyA-aE-EMIN-3a-58lO4_LZ4XbBtg"/>
+<div class="absolute inset-0 bg-gradient-to-l from-transparent via-[#090D10]/70 to-[#090D10]"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-[#090D10] via-transparent to-transparent"></div>
+</div>
+<div class="relative z-10">
+<!-- Top Tags Row -->
+<div class="flex items-center justify-between gap-2 mb-3">
+<div class="flex items-center gap-2">
+<!-- Dance Pill -->
+<span class="px-3.5 py-1 rounded-full text-xs font-semibold bg-[#1C2228] text-neutral-200 border border-neutral-700/60 shadow-sm">
+              Dance
+            </span>
+<!-- Rating Pill -->
+<div class="flex items-center gap-1.5 text-xs text-neutral-300">
+<svg class="w-3.5 h-3.5 text-amber-400 fill-amber-400" fill="currentColor" viewbox="0 0 20 20">
+<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+</svg>
+<span class="font-bold text-white">4.8</span>
+<span class="text-neutral-400 text-[11px]">(2.3K participants)</span>
+</div>
+</div>
+<!-- Registration Status Pill -->
+<div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-[11px] font-semibold text-emerald-400 shadow-emeraldGlow">
+<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+<span>Registration Open</span>
+</div>
+</div>
+<!-- Competition Title -->
+<h1 class="text-2xl sm:text-[28px] leading-tight font-serifHeading font-bold text-white tracking-wide max-w-[270px]">
+          Feedants Classical Dance
+        </h1>
+<!-- Subtitle & Sanskrit/Classical Tagline -->
+<p class="text-xs text-neutral-400 mt-2 max-w-[260px] leading-relaxed">
+          Showcase your talent, celebrate tradition, and let your passion dance its way to glory!
+        </p>
+<!-- Subtle Italic Callout in background -->
+<div class="text-right text-[11px] italic font-serif text-amber-500/50 mt-1 pointer-events-none select-none">
+          Art · Culture · Passion Forever
+        </div>
+</div>
+</section>
+<!-- END: HeroSection -->
+<!-- BEGIN: KeyMetricsGrid -->
+<section class="px-4 mb-4" data-purpose="metrics-summary">
+<div class="grid grid-cols-12 gap-2.5">
+<!-- Prize Pool -->
+<div class="col-span-4 bg-gradient-to-b from-[#14191D] to-[#0E1215] p-3 rounded-xl gold-border flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shrink-0">
+<svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M12 15v5m-4 0h8M6 4h12v4a6 6 0 01-12 0V4z" stroke-linecap="round" stroke-linejoin="round"></path>
+<path d="M6 7H3a2 2 0 00-2 2v1a4 4 0 004 4h1M18 7h3a2 2 0 012 2v1a4 4 0 01-4 4h-1" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<span class="text-[10px] text-neutral-400 block font-medium">Prize Pool</span>
+<span class="text-sm font-bold text-white tracking-tight">₹ 1,500</span>
+</div>
+</div>
+<!-- Entry Fee -->
+<div class="col-span-4 bg-gradient-to-b from-[#14191D] to-[#0E1215] p-3 rounded-xl gold-border flex items-center gap-2.5">
+<div class="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center shrink-0">
+<svg class="w-5 h-5 text-amber-400" fill="currentColor" viewbox="0 0 24 24">
+<path d="M4 4h16a2 2 0 0 1 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-3a2 2 0 0 0 0-4V6a2 2 0 0 1 2-2zm5 4a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2H9zm0 4a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2H9z"></path>
+</svg>
+</div>
+<div>
+<span class="text-[10px] text-neutral-400 block font-medium">Entry Fee</span>
+<span class="text-sm font-bold text-white tracking-tight">₹ 99</span>
+</div>
+</div>
+<!-- Spots Left Progress -->
+<div class="col-span-4 bg-gradient-to-b from-[#14191D] to-[#0E1215] p-2.5 rounded-xl gold-border flex flex-col justify-between">
+<div class="flex items-center gap-1.5">
+<svg class="w-4 h-4 text-amber-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span class="text-[11px] font-bold text-amber-400 leading-tight">Only 19 spots left</span>
+</div>
+<!-- Progress bar -->
+<div class="mt-1">
+<div class="w-full bg-neutral-800 rounded-full h-1.5 overflow-hidden">
+<div class="bg-gradient-to-r from-amber-500 to-amber-300 h-1.5 rounded-full" style="width: 10%"></div>
+</div>
+<div class="text-[9px] text-right text-neutral-400 mt-1 font-mono">
+<span class="text-white font-semibold">1</span> / 20 Registered
+            </div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: KeyMetricsGrid -->
+<!-- BEGIN: JudgeCard -->
+<section class="px-4 mb-3" data-purpose="competition-judge">
+<div class="bg-[#12171B] gold-border rounded-xl p-3 flex items-center justify-between gap-3">
+<!-- Judge Avatar & Credentials -->
+<div class="flex items-center gap-3">
+<div class="relative w-12 h-12 rounded-full overflow-hidden border border-amber-500/40 p-0.5">
+<img alt="Judge Manju Dubey" class="w-full h-full object-cover object-top rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFNqHvMzh8Ui713VpHW6BZzYr04_AlGdM_I85e5SBNFnvDP11T82QPxOCrRHNkR6SsFMzLUn2UW64jKR2C1iPk3xHMDtxBXujSb9OxMwlqKpOBs9xF0SwmAW9m7Bg-esLna4oUfsXltfrxTRTWJsz71PF7miTHgPpq0Iv3s0pTHgZ7JidB5W3EaRRgatw_goZNwPKNCJo00VoyeA228pJryCzWi13v1qZXveE933S5uWP35lHJFo0hF8HGFPKvu6UpNOs"/>
+</div>
+<div>
+<span class="text-[10px] uppercase tracking-wider text-neutral-400 block font-medium">Judge</span>
+<h4 class="text-sm font-bold text-white tracking-wide">Manju Dubey</h4>
+<p class="text-[11px] text-neutral-300">Professional Kathak Dancer</p>
+<span class="text-[10px] text-neutral-400">12+ years of experience</span>
+</div>
+</div>
+<!-- Watch Video Button -->
+<button class="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[#212930] hover:bg-[#28323a] text-xs font-semibold text-white border border-neutral-700/60 shadow-sm transition" type="button">
+<div class="w-4 h-4 rounded-full bg-white flex items-center justify-center">
+<svg class="w-2.5 h-2.5 text-black fill-current ml-0.5" viewbox="0 0 24 24">
+<polygon points="5 3 19 12 5 21 5 3"></polygon>
+</svg>
+</div>
+<span>Watch Video</span>
+</button>
+</div>
+</section>
+<!-- END: JudgeCard -->
+<!-- BEGIN: UrgencyCountdownBanner -->
+<section class="px-4 mb-5" data-purpose="countdown-timer">
+<div class="bg-[#13191D] gold-border rounded-xl px-3.5 py-2.5 flex items-center justify-between">
+<!-- Left: Hourglass and Label -->
+<div class="flex items-center gap-2">
+<div class="text-amber-400">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<span class="text-[11px] font-medium text-neutral-300">Registration closes in</span>
+</div>
+<!-- Center: Monospace Timer Values -->
+<div class="font-mono font-bold text-amber-400 text-xs sm:text-sm tracking-wider flex items-center gap-1">
+<span class="text-amber-300 underline decoration-amber-500/50">01d</span> : 
+          <span class="text-amber-300 underline decoration-amber-500/50">06h</span> : 
+          <span class="text-amber-300 underline decoration-amber-500/50">29m</span> : 
+          <span class="text-amber-300 underline decoration-amber-500/50">32s</span>
+</div>
+<!-- Right: Hurry up badge -->
+<div class="flex items-center gap-1 text-[11px] text-amber-400 font-semibold bg-amber-400/10 px-2 py-1 rounded">
+<svg class="w-3.5 h-3.5" fill="currentColor" viewbox="0 0 24 24">
+<path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm1 14h-2v-2h2v2zm0-4h-2V7h2v5z"></path>
+</svg>
+<span>Hurry up!</span>
+</div>
+</div>
+</section>
+<!-- END: UrgencyCountdownBanner -->
+<!-- BEGIN: ImportantDates -->
+<section class="px-4 mb-5" data-purpose="important-dates">
+<div class="flex items-center justify-between mb-2.5">
+<h3 class="text-sm font-bold text-white tracking-wide">Important Dates</h3>
+<button class="text-xs text-amber-400 font-medium hover:underline" type="button">View all</button>
+</div>
+<!-- 4 Dates Grid (Registration Start, Submissions Start/End, Result) -->
+<div class="grid grid-cols-2 gap-2">
+<!-- Registration Starts -->
+<div class="bg-[#12161A] gold-border-light rounded-xl p-2.5 flex items-start gap-2.5">
+<div class="p-2 bg-amber-500/10 rounded-lg text-amber-400 shrink-0">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div class="leading-tight">
+<span class="text-[10px] text-neutral-400 block">Registration Starts</span>
+<span class="text-xs font-bold text-white">01 Aug 24</span>
+<span class="text-[10px] text-neutral-400 block mt-0.5">11:00 PM</span>
+</div>
+</div>
+<!-- Submission Starts -->
+<div class="bg-[#12161A] gold-border-light rounded-xl p-2.5 flex items-start gap-2.5">
+<div class="p-2 bg-amber-500/10 rounded-lg text-amber-400 shrink-0">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div class="leading-tight">
+<span class="text-[10px] text-neutral-400 block">Submission Starts</span>
+<span class="text-xs font-bold text-white">10 Aug 24</span>
+<span class="text-[10px] text-neutral-400 block mt-0.5">04:00 AM</span>
+</div>
+</div>
+<!-- Submission Ends -->
+<div class="bg-[#12161A] gold-border-light rounded-xl p-2.5 flex items-start gap-2.5">
+<div class="p-2 bg-amber-500/10 rounded-lg text-amber-400 shrink-0">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div class="leading-tight">
+<span class="text-[10px] text-neutral-400 block">Submission Ends</span>
+<span class="text-xs font-bold text-white">20 Aug 24</span>
+<span class="text-[10px] text-neutral-400 block mt-0.5">11:59 PM</span>
+</div>
+</div>
+<!-- Result Date -->
+<div class="bg-[#12161A] gold-border-light rounded-xl p-2.5 flex items-start gap-2.5">
+<div class="p-2 bg-amber-500/10 rounded-lg text-amber-400 shrink-0">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M12 15v5m-4 0h8M6 4h12v4a6 6 0 01-12 0V4z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div class="leading-tight">
+<span class="text-[10px] text-neutral-400 block">Result Date</span>
+<span class="text-xs font-bold text-white">01 Sept 24</span>
+<span class="text-[10px] text-neutral-400 block mt-0.5">10:00 AM</span>
+</div>
+</div>
+</div>
+</section>
+<!-- END: ImportantDates -->
+<!-- BEGIN: PreviousWinners -->
+<section class="px-4 mb-5" data-purpose="previous-winners">
+<div class="flex items-center justify-between mb-2.5">
+<h3 class="text-sm font-bold text-white tracking-wide">Previous Winners</h3>
+<button class="text-xs text-amber-400 font-medium hover:underline" type="button">View all</button>
+</div>
+<!-- Horizontal Carousel of Winners -->
+<div class="flex items-center gap-2.5 overflow-x-auto no-scrollbar pb-1">
+<!-- Winner 1 -->
+<div class="bg-[#12171B] gold-border-light rounded-xl p-2 flex items-center gap-2 min-w-[155px] shrink-0">
+<div class="relative w-12 h-12 rounded-lg overflow-hidden bg-neutral-800">
+<img alt="Riya Sinha" class="w-full h-full object-cover object-center" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAB66rxu0vws07TYIJZ2AuM0mt_0-zwUAHTslgCQL_zDManjIqltPtx51tFgClz3h1Z1ZzFfnHgF0g87_3Ci3qJV_f9iMbRjiTbg2jlur0ACQoOZQ-DMKT-x7NUlERhJoVknheSOmNH_l1Dwg05t52_nGTBrRiVW8BPps7jzaaeAVU_skd23FaSeihP6BjgG_xeUzmtANLO_oO6fKBDzXR6uC8tlL1Ui5_r_sdXUn9ot1fuCaXKo5mesU5bwtLcmLfdYe4"/>
+<div class="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-white flex items-center justify-center shadow">
+<svg class="w-2 h-2 text-black fill-current ml-0.5" viewbox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+</div>
+</div>
+<div>
+<p class="text-xs font-bold text-white truncate max-w-[80px]">Riya Sinha</p>
+<span class="text-[10px] text-amber-400 font-medium">1st Winner</span>
+</div>
+</div>
+<!-- Winner 2 -->
+<div class="bg-[#12171B] gold-border-light rounded-xl p-2 flex items-center gap-2 min-w-[155px] shrink-0">
+<div class="relative w-12 h-12 rounded-lg overflow-hidden bg-neutral-800">
+<img alt="Aarav Mehta" class="w-full h-full object-cover object-bottom" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDonfD9lYLN_UlUQ0lrpZGufnAVXBlwN2_we6ZDqYiBEeOy5T8RjTrY-4f7N4CT5FFR6zPfev7CNxfpQn08IW2dtIMvxmhTRYQeW7SshglSIJv1Hk8pA2Pam33kyflRnNuRJL_IzYxnKyMgFjiPbrBS0uka8vDzgNaUKDdiXkUmcC13YI531hkfDd5sFV8friqg67DajsXmP7SWF9RXCF9ByH7v-dxDO_jmJX5zJjVk26f_ZMBaUwaW6COGe6fWU3s0cMU"/>
+<div class="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-white flex items-center justify-center shadow">
+<svg class="w-2 h-2 text-black fill-current ml-0.5" viewbox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+</div>
+</div>
+<div>
+<p class="text-xs font-bold text-white truncate max-w-[80px]">Aarav Mehta</p>
+<span class="text-[10px] text-amber-400 font-medium">2nd Winner</span>
+</div>
+</div>
+<!-- Winner 3 -->
+<div class="bg-[#12171B] gold-border-light rounded-xl p-2 flex items-center gap-2 min-w-[155px] shrink-0">
+<div class="relative w-12 h-12 rounded-lg overflow-hidden bg-neutral-800">
+<img alt="Neha Verma" class="w-full h-full object-cover object-center" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPwuMOWzc1Vakffx0iQ-XhXDahDLh2A5-OUHSngzAZPb4vRprPRhCcMbrEKTJKn76rS0pT_QkDrWug5Kt_hcKUViwWWtNk9gicfDORDErpDHe0xJ5SeeIM5F7v538GLkrQBINvmhR74ns821naqK2HYj8F0tkKNX6kApU-DgBj33hLiOJV8xN7KuSInywE5o8NAzo9k5p7KKDw3RXbmb3cg50itxHBlQeABpWq7T7OUr_Mc7TmZc4FtlbidSxI7qYI1Zw"/>
+<div class="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-white flex items-center justify-center shadow">
+<svg class="w-2 h-2 text-black fill-current ml-0.5" viewbox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+</div>
+</div>
+<div>
+<p class="text-xs font-bold text-white truncate max-w-[80px]">Neha Verma</p>
+<span class="text-[10px] text-amber-400 font-medium">3rd Winner</span>
+</div>
+</div>
+<!-- Winner 4 -->
+<div class="bg-[#12171B] gold-border-light rounded-xl p-2 flex items-center gap-2 min-w-[155px] shrink-0">
+<div class="relative w-12 h-12 rounded-lg overflow-hidden bg-neutral-800">
+<img alt="Vikram Rao" class="w-full h-full object-cover object-center" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBV7Tu5cuFZsKZpBNb54Qm92wYjL4rG4hbKOEgbLIM0EEhdQbxOcCszIWoZwbivL4FHeGmm-IZ1e-FLNWXvfqyp8qxpJqWf0iYzceOWDdRXCvAmImmmrEY62_nQ2hw-BUdO9hlxCFv1HyQIPJt_f1YS2JWVX7UKeuqvGh7lBOGysqo2xh-3ppHsRbfQalbxjmeNY5E_Sd6gRCy4C-vgRHLeLTZnPAh4BFwVRgUsBMLSOLu7Czmprf0HvTHKm3MQMlKsZ1E"/>
+<div class="absolute bottom-1 right-1 w-4 h-4 rounded-full bg-white flex items-center justify-center shadow">
+<svg class="w-2 h-2 text-black fill-current ml-0.5" viewbox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+</div>
+</div>
+<div>
+<p class="text-xs font-bold text-white truncate max-w-[80px]">Vikram Rao</p>
+<span class="text-[10px] text-amber-400 font-medium">4th Winner</span>
+</div>
+</div>
+</div>
+</section>
+<!-- END: PreviousWinners -->
+<!-- BEGIN: TabsSection -->
+<section class="px-4 mb-4" data-purpose="competition-tabs">
+<div class="flex items-center justify-between border-b border-white/[0.08] text-xs font-semibold text-neutral-400">
+<!-- Active Tab: About Competition -->
+<button class="pb-2.5 text-amber-400 border-b-2 border-amber-400 font-bold transition" type="button">
+          About Competition
+        </button>
+<button class="pb-2.5 hover:text-neutral-200 transition" type="button">
+          Judging Parameters
+        </button>
+<button class="pb-2.5 hover:text-neutral-200 transition" type="button">
+          Rules &amp; Eligibility
+        </button>
+</div>
+<!-- Tab Content Box with Classical Motif BG -->
+<div class="bg-[#12161A] gold-border rounded-xl p-4 mt-3 relative overflow-hidden dancer-motif-bg">
+<!-- Subtle classical silhouette overlay in background -->
+<div class="absolute right-0 bottom-0 top-0 w-32 pointer-events-none opacity-10">
+<svg class="w-full h-full text-amber-400" fill="currentColor" viewbox="0 0 100 100">
+<path d="M50 0C60 20 80 30 100 50C80 70 60 80 50 100C40 80 20 70 0 50C20 30 40 20 50 0Z"></path>
+</svg>
+</div>
+<p class="text-xs text-neutral-300 leading-relaxed relative z-10">
+          This is an online classical dance competition open to all age groups. Celebrate the beauty of Indian classical dance and showcase your talent. Express your passion through traditional dance.
+        </p>
+<!-- Read more trigger -->
+<div class="text-center mt-3 relative z-10">
+<button class="text-xs font-bold text-amber-400 inline-flex items-center gap-1 hover:underline" type="button">
+<span>Read more</span>
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M19 9l-7 7-7-7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+</div>
+</div>
+</section>
+<!-- END: TabsSection -->
+<!-- BEGIN: RewardsSection -->
+<section class="px-4 mb-4" data-purpose="competition-rewards">
+<div class="flex items-center gap-1.5 mb-2.5">
+<h3 class="text-sm font-bold text-white tracking-wide">Rewards</h3>
+<span class="text-xs text-neutral-400">(All positions)</span>
+</div>
+<!-- 6 Tier Rewards Cards (Horizontal Scroll or Grid) -->
+<div class="grid grid-cols-6 gap-1.5">
+<!-- 1st Winner -->
+<div class="col-span-1 bg-[#12161A] gold-border-light rounded-lg py-2.5 px-1 flex flex-col items-center justify-center text-center">
+<div class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center mb-1">
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 20 20">
+<path d="M10 2l2.5 5 5.5.8-4 3.9.9 5.5L10 14.5 5.1 17.2l.9-5.5-4-3.9 5.5-.8z"></path>
+</svg>
+</div>
+<span class="text-[9px] text-neutral-400 block truncate w-full">1st Winner</span>
+<span class="text-[11px] font-bold text-white mt-0.5">₹ 550</span>
+</div>
+<!-- 2nd Winner -->
+<div class="col-span-1 bg-[#12161A] gold-border-light rounded-lg py-2.5 px-1 flex flex-col items-center justify-center text-center">
+<div class="w-6 h-6 rounded-full bg-slate-300/20 text-slate-300 flex items-center justify-center mb-1">
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 20 20">
+<path d="M10 2l2.5 5 5.5.8-4 3.9.9 5.5L10 14.5 5.1 17.2l.9-5.5-4-3.9 5.5-.8z"></path>
+</svg>
+</div>
+<span class="text-[9px] text-neutral-400 block truncate w-full">2nd Winner</span>
+<span class="text-[11px] font-bold text-white mt-0.5">₹ 300</span>
+</div>
+<!-- 3rd Winner -->
+<div class="col-span-1 bg-[#12161A] gold-border-light rounded-lg py-2.5 px-1 flex flex-col items-center justify-center text-center">
+<div class="w-6 h-6 rounded-full bg-amber-700/20 text-amber-600 flex items-center justify-center mb-1">
+<svg class="w-3.5 h-3.5 fill-current" viewbox="0 0 20 20">
+<path d="M10 2l2.5 5 5.5.8-4 3.9.9 5.5L10 14.5 5.1 17.2l.9-5.5-4-3.9 5.5-.8z"></path>
+</svg>
+</div>
+<span class="text-[9px] text-neutral-400 block truncate w-full">3rd Winner</span>
+<span class="text-[11px] font-bold text-white mt-0.5">₹ 240</span>
+</div>
+<!-- 4th Winner -->
+<div class="col-span-1 bg-[#12161A] gold-border-light rounded-lg py-2.5 px-1 flex flex-col items-center justify-center text-center">
+<div class="w-6 h-6 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-1">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+</svg>
+</div>
+<span class="text-[9px] text-neutral-400 block truncate w-full">4th Winner</span>
+<span class="text-[11px] font-bold text-white mt-0.5">₹ 200</span>
+</div>
+<!-- 5th Winner -->
+<div class="col-span-1 bg-[#12161A] gold-border-light rounded-lg py-2.5 px-1 flex flex-col items-center justify-center text-center">
+<div class="w-6 h-6 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-1">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+</svg>
+</div>
+<span class="text-[9px] text-neutral-400 block truncate w-full">5th Winner</span>
+<span class="text-[11px] font-bold text-white mt-0.5">₹ 120</span>
+</div>
+<!-- 6th Winner -->
+<div class="col-span-1 bg-[#12161A] gold-border-light rounded-lg py-2.5 px-1 flex flex-col items-center justify-center text-center">
+<div class="w-6 h-6 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-1">
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+</svg>
+</div>
+<span class="text-[9px] text-neutral-400 block truncate w-full">6th Winner</span>
+<span class="text-[11px] font-bold text-white mt-0.5">₹ 80</span>
+</div>
+</div>
+<!-- Incentives banner -->
+<div class="mt-3 bg-[#13191E] border border-amber-500/20 rounded-xl p-3 flex items-center gap-2">
+<span class="text-amber-400 text-sm">🎁</span>
+<p class="text-[11px] text-neutral-300">
+<strong class="text-amber-300">Incentives:</strong> Only contributions from paid participants will be considered for judging.
+        </p>
+</div>
+</section>
+<!-- END: RewardsSection -->
+<!-- BEGIN: TrustAndInfoGrid -->
+<section class="px-4 mb-4 space-y-2.5" data-purpose="trust-and-info">
+<!-- Row: Prize Transfer & Razorpay -->
+<div class="grid grid-cols-2 gap-2.5">
+<!-- How to receive prize money card -->
+<div class="bg-[#12161A] gold-border-light rounded-xl p-3 flex items-start justify-between">
+<div class="space-y-1">
+<div class="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 mb-1">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<rect height="14" rx="2" width="20" x="2" y="5"></rect>
+<line x1="2" x2="22" y1="10" y2="10"></line>
+</svg>
+</div>
+<h4 class="text-xs font-bold text-white leading-tight">How will you receive prize money?</h4>
+<p class="text-[10px] text-neutral-400 leading-tight">All prize money will be transferred directly to your bank account.</p>
+</div>
+<svg class="w-4 h-4 text-neutral-500 shrink-0 mt-1" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+<!-- Safe & Secure / Razorpay -->
+<div class="bg-[#12161A] gold-border-light rounded-xl p-3 flex items-start justify-between">
+<div class="space-y-1">
+<div class="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 mb-1">
+<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<h4 class="text-xs font-bold text-white leading-tight">Safe and Secure</h4>
+<p class="text-[10px] text-neutral-400 leading-tight">Secure payments powered by</p>
+<div class="flex items-center gap-1 text-[11px] font-bold text-sky-400 italic pt-0.5">
+<span>⚡ Razorpay</span>
+</div>
+</div>
+<svg class="w-4 h-4 text-neutral-500 shrink-0 mt-1" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+</div>
+<!-- Refer & Earn Banner -->
+<div class="bg-[#12161A] gold-border rounded-xl p-3.5 flex items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<h4 class="text-xs font-bold text-white">Refer &amp; Earn more discount!</h4>
+<p class="text-[10px] text-neutral-400">Share with your friends and get extra benefits.</p>
+</div>
+</div>
+<button class="shrink-0 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-gold-gradientStart to-gold-gradientEnd text-neutral-950 font-bold text-xs shadow-sm hover:brightness-105 active:scale-95 transition flex items-center gap-1" type="button">
+<span>Refer Now</span>
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"></path></svg>
+</button>
+</div>
+<!-- Hear From Our Users -->
+<div class="bg-[#12161A] gold-border-light rounded-xl p-3.5 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 shrink-0">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24">
+<path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<h4 class="text-xs font-bold text-white">Hear From Our Users</h4>
+<p class="text-[10px] text-neutral-400">Read what participants say about Feedants.</p>
+</div>
+</div>
+<svg class="w-4 h-4 text-neutral-500 shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</div>
+</section>
+<!-- END: TrustAndInfoGrid -->
+<!-- BEGIN: StickyFooterActions -->
+<div class="fixed bottom-0 left-0 right-0 z-50 flex justify-center pointer-events-none" data-purpose="fixed-bottom-bar-wrapper">
+<div class="w-full max-w-[430px] bg-[#0A0E11]/95 backdrop-blur-md border-t border-neutral-800/80 pointer-events-auto">
+<!-- Primary Action CTA Button: Upload Submission -->
+<div class="px-4 pt-3 pb-2">
+<button class="w-full py-3 rounded-xl bg-gradient-to-r from-[#F0D58C] via-[#E4BC66] to-[#B9892F] text-neutral-950 font-bold shadow-goldGlow active:scale-[0.99] transition flex items-center justify-center gap-2 group" type="button">
+<svg class="w-5 h-5 text-neutral-950 stroke-[2.2]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<div class="text-left">
+<div class="text-sm font-extrabold tracking-wide uppercase leading-none">Upload Submission</div>
+<div class="text-[10px] font-semibold text-neutral-900/80 tracking-normal mt-0.5">Express. Perform. Inspire.</div>
+</div>
+</button>
+</div>
+<!-- Persistent App Bottom Navigation Bar -->
+<nav class="flex items-center justify-around px-3 pt-1 pb-3 text-neutral-400 text-[10px] font-medium" data-purpose="app-bottom-nav">
+<!-- Home -->
+<button class="flex flex-col items-center gap-1 hover:text-white transition" type="button">
+<svg class="w-5 h-5" fill="currentColor" viewbox="0 0 20 20">
+<path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+</svg>
+<span>Home</span>
+</button>
+<!-- Search / Explore -->
+<button class="flex flex-col items-center gap-1 hover:text-white transition" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Search</span>
+</button>
+<!-- Floating Create (+) Button -->
+<button aria-label="Create Submission" class="flex flex-col items-center -mt-4 group" type="button">
+<div class="w-11 h-11 rounded-full bg-gradient-to-tr from-amber-600 via-amber-400 to-amber-300 text-neutral-950 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+<svg class="w-6 h-6 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M12 4v16m8-8H4" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<span class="text-white text-[10px] mt-0.5 font-semibold">Create</span>
+</button>
+<!-- Competitions (Active) -->
+<button class="flex flex-col items-center gap-1 text-amber-400 font-semibold" type="button">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24">
+<path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0011 15.9V19H7v2h10v-2h-4v-3.1c1.9-.38 3.5-1.74 3.99-3.52C19.39 12.06 21 10.05 21 7.5V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"></path>
+</svg>
+<span>Competitions</span>
+</button>
+<!-- Profile -->
+<button class="flex flex-col items-center gap-1 hover:text-white transition" type="button">
+<div class="w-5 h-5 rounded-full overflow-hidden border border-neutral-400">
+<img alt="Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAvuG3miwQBhKj1zIdyGpkitYoDWw-jDJnPBZcXk-vZi_Bns7AyobGEcQJxqjQdGnijg6YjDcxUgJcY_nRptIfBPw5LkYCtQU7739LsYkv62DbD_zqNaWlJ2FAgi3LUbPlOmV5HILmjeR62YyNqEIT4Dy0YJxIiHQipFAqEObublXLa17u7bE4KJEiP0ykAatvAuDczQSTTGzhWHb6i8pVVY9ghOh5XUINe-1nXLfxOKXh3epGaTANR89_yShR_UjIXTM0"/>
+</div>
+<span>Profile</span>
+</button>
+</nav>
+</div>
+</div>
+<!-- END: StickyFooterActions -->
+</main>
+</body></html>
